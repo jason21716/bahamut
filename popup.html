@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- Bootstrap -->
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+		<link href="css/popup.css" rel="stylesheet">
+		<!-- HTML5 shim and Respond.js 讓 IE8 支援 HTML5 元素與媒體查詢 -->
+		<!-- 警告：Respond.js 無法在 file:// 協定下運作 -->
+		<!--[if lt IE 9]>
+		  <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+		  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+		<![endif]-->
+	</head>
+	<body>
+		<div class="panel panel-primary">
+			<div class="panel-heading">RPG公會專用擴充插件 - 選項設定</div>
+			<div class="panel-body">
+				<form role="form">
+					<div class="form-group">
+						<label for="titleNumbersOn">標題顯示通知數目</label>
+						<p>
+							<button type="button" class="btn btn-primary" id="titleNumbersOn">開啟</button>
+							<button type="button" class="btn btn-default" id="titleNumbersOff">關閉</button>
+						</p>
+					</div>
+					<div class="form-group">
+						<label for="singleACMsgReverseOn">哈拉串順序顛倒</label>
+						<p>
+							<button type="button" class="btn btn-primary" id="singleACMsgReverseOn">開啟</button>
+							<button type="button" class="btn btn-default" id="singleACMsgReverseOff">關閉</button>
+						</p>
+					</div>
+					<div class="form-group">
+						<label for="replyDivWordCountOn">對話框提示剩餘字數</label>
+						<p>
+							<button type="button" class="btn btn-primary" id="replyDivWordCountOn">開啟</button>
+							<button type="button" class="btn btn-default" id="replyDivWordCountOff">關閉</button>
+						</p>
+					</div>
+					<div class="form-group">
+						<label for="bookMarkBtnOn">紀錄書籤按鈕是否顯示(已存書籤不受影響)</label>
+						<p>
+							<button type="button" class="btn btn-primary" id="bookMarkBtnOn">開啟</button>
+							<button type="button" class="btn btn-default" id="bookMarkBtnOff">關閉</button>
+						</p>
+					</div>
+					<div class="form-group">
+						<button type="button" class="btn btn-default btn-block" disabled="disabled">完成設定後請重整網頁以套用設定</button>
+					</div>
+				<form>
+			</div>
+		</div>
+		<div class="panel panel-primary">
+			<div class="panel-heading">書籤設定</div>
+			<table class="table">
+				<thead>
+					<tr>
+						<th>書籤內容</th>
+						<th>動作</th>
+					</tr>
+				</thead>
+				<tbody id="bookMarkContent">
+					
+				</tbody>
+			</table>
+		</div>
+		<!-- jQuery (Bootstrap 所有外掛均需要使用) -->
+		<script src="jquery-2.0.0.min.js"></script>
+		<!-- 依需要參考已編譯外掛版本（如下），或各自獨立的外掛版本 -->
+		<script src="bootstrap.min.js"></script>
+		<script src="utility.js"></script>
+		<script src="popup.js"></script>
+	</body>
+</html>

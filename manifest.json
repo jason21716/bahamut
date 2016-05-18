@@ -1,0 +1,52 @@
+{
+	"manifest_version": 2,
+
+	"name": "巴哈姆特公會擴充套件",
+	"description": "增進巴哈姆特公會對串體驗",
+	"version": "0.0.1",
+	"icons": 
+	{ 
+		"19": "baha19.png",
+		"38": "baha38.png",
+        "48": "baha48.png",
+        "128": "baha128.png" 
+	},
+	
+	"background": 
+	{ 
+		"scripts": ["utility.js","background.js"] 
+	},
+	
+	"permissions": ["tabs","storage","activeTab","http://guild.gamer.com.tw/*"],
+	
+	"page_action": 
+	{
+		"default_icon": 
+		{
+			"19": "baha19.png",
+			"38": "baha38.png"
+		},
+		"default_title": "設定套件選項...",
+		"default_popup": "popup.html"
+	},
+	
+	"content_scripts":
+	[
+		{
+		"matches":["http://guild.gamer.com.tw/*"],
+		"js":["jquery-2.0.0.min.js","utility.js","singleACMsg.js","content_script.js"]
+		}		
+	],
+	
+	"externally_connectable": 
+	{
+		"ids": 
+		[
+		  "*"
+		],
+		"matches": [
+		  "http://guild.gamer.com.tw/*"
+		],
+		"accepts_tls_channel_id": false
+	}
+}
