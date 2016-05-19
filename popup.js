@@ -8,12 +8,22 @@ function changeBtnState(str){
 	}
 }
 
+function changeCheckBoxState(str){
+	document.getElementById(str).checked=booleanArr[str];
+}
+
 function btnClick(str,stat){
 	var booleanStat = (stat == 'On') ? true : false;
 	var storgeArr = '{"'+str+'":'+booleanStat+'}';
 	booleanArr[str] = booleanStat;
 	chrome.storage.local.set(JSON.parse(storgeArr));
 	changeBtnState(str);
+}
+
+function checkBoxClick(str,stat){
+	var storgeArr = '{"'+str+'":'+stat+'}';
+	booleanArr[str] = stat;
+	chrome.storage.local.set(JSON.parse(storgeArr));
 }
 
 function makeFunBtnClick(str,stat){
@@ -26,6 +36,9 @@ var booleanArr = new Array();
 chrome.storage.local.get(null,function(item){
 	if(isEmpty(item)){
 		chrome.storage.local.set({titleNumbers:false});
+		chrome.storage.local.set({titleNumbersCheckNotice:false});
+		chrome.storage.local.set({titleNumbersCheckSubscript:false});
+		chrome.storage.local.set({titleNumbersCheckRecommend:false});
 		chrome.storage.local.set({singleACMsgReverse:false});
 		chrome.storage.local.set({replyDivWordCount:false});
 		chrome.storage.local.set({bookMarkBtn:false});
@@ -34,16 +47,25 @@ chrome.storage.local.get(null,function(item){
 		booleanArr['singleACMsgReverse'] = false;
 		booleanArr['replyDivWordCount'] = false;
 		booleanArr['bookMarkBtn'] = false;
+		booleanArr['titleNumbersCheckNotice'] = false;
+		booleanArr['titleNumbersCheckSubscript'] = false;
+		booleanArr['titleNumbersCheckRecommend'] = false;
 	}else{
 		booleanArr['titleNumbers'] = item['titleNumbers'];
 		booleanArr['singleACMsgReverse'] = item['singleACMsgReverse'];
 		booleanArr['replyDivWordCount'] = item['replyDivWordCount'];
 		booleanArr['bookMarkBtn'] = item['bookMarkBtn'];
+		booleanArr['titleNumbersCheckNotice'] = item['titleNumbersCheckNotice'];
+		booleanArr['titleNumbersCheckSubscript'] = item['titleNumbersCheckSubscript'];
+		booleanArr['titleNumbersCheckRecommend'] = item['titleNumbersCheckRecommend'];
 	}
 	changeBtnState('titleNumbers');
 	changeBtnState('singleACMsgReverse');
 	changeBtnState('replyDivWordCount');
 	changeBtnState('bookMarkBtn');
+	changeCheckBoxState('titleNumbersCheckNotice');
+	changeCheckBoxState('titleNumbersCheckSubscript');
+	changeCheckBoxState('titleNumbersCheckRecommend');
 	
 	document.getElementById('titleNumbersOn').addEventListener('click',makeFunBtnClick('titleNumbers','On'));
 	document.getElementById('singleACMsgReverseOn').addEventListener('click',makeFunBtnClick('singleACMsgReverse','On'));
@@ -54,6 +76,17 @@ chrome.storage.local.get(null,function(item){
 	document.getElementById('singleACMsgReverseOff').addEventListener('click',makeFunBtnClick('singleACMsgReverse','Off'));
 	document.getElementById('replyDivWordCountOff').addEventListener('click',makeFunBtnClick('replyDivWordCount','Off'));
 	document.getElementById('bookMarkBtnOff').addEventListener('click',makeFunBtnClick('bookMarkBtn','Off'));
+	
+	document.getElementById('titleNumbersCheckNotice').addEventListener("change", function(event){
+		checkBoxClick('titleNumbersCheckNotice',event.target.checked);
+	});
+	document.getElementById('titleNumbersCheckSubscript').addEventListener("change", function(event){
+		checkBoxClick('titleNumbersCheckSubscript',event.target.checked);
+	});
+	document.getElementById('titleNumbersCheckRecommend').addEventListener("change", function(event){
+		checkBoxClick('titleNumbersCheckRecommend',event.target.checked);
+	});
+	
 	
 	for (i = 0; i < item['bookMarkIndex'].length; i++) {
 		var indexStr = item['bookMarkIndex'][i];

@@ -5,9 +5,11 @@ chrome.storage.local.get(null,function(item){
 	//Message alert on title
 	if(item['titleNumbers'] === true){
 		var title = document.title;
-		title_msgChange(title);
-		document.body.addEventListener("DOMSubtreeModified", function(event){
-			title_msgChange(title);
+		title_msgChange(title,item['titleNumbersCheckNotice']
+					,item['titleNumbersCheckSubscript'],item['titleNumbersCheckRecommend']);
+		document.getElementById('BH-top-data').addEventListener("DOMSubtreeModified", function(event){
+			title_msgChange(title,item['titleNumbersCheckNotice']
+					,item['titleNumbersCheckSubscript'],item['titleNumbersCheckRecommend']);
 		});
 	}
 
@@ -84,9 +86,11 @@ chrome.storage.local.get(null,function(item){
 				replyMsgHistoryArr[i].insertBefore(newItem, replyMsgHistoryArr[i].childNodes[0]);
 				replyMsgHistoryArr[i].addEventListener('mouseover',function(){
 					this.childNodes[0].style.display='block';
+					this.style.width='570px';
 				});
 				replyMsgHistoryArr[i].addEventListener('mouseout',function(){
 					this.childNodes[0].style.display='none';
+					this.style.width='500px';
 				});
 				document.getElementById('baha-bookMark-'+MsgReid).addEventListener('click',function(event){
 					var chromeBookMarkNameStr = '{"bookmarkName-'+event.target.getAttribute('Msgid')+'":"'+document.getElementsByClassName('msgright')[0].textContent.substr(0,30)+'"}';
@@ -109,7 +113,7 @@ chrome.storage.local.get(null,function(item){
 				});
 			}
 			var sheet = document.createElement('style')
-			sheet.innerHTML = ".baha-boonMarkBtn {float:right; border-width:1px; border-color:black;border-style: inset;background-color: #ffffff;padding: 3px; display:none;} .baha-boonMarkBtn:hover {color:red;}";
+			sheet.innerHTML = ".baha-boonMarkBtn {float:right; border-width:1px; border-color:black;border-style: inset;background-color: #ffffff;padding: 3px; display:none; margin-left: 10px !important; width: 50px; height: 30px;text-align: center; line-height: 30px !important;} .baha-boonMarkBtn:hover {color:red;}";
 			document.body.appendChild(sheet);
 		}
 		//回朔書籤位置

@@ -24,17 +24,23 @@ function getPHPFileNameString(s){
 
 
 
-function title_msgChange(title){
+function title_msgChange(title,boolNotice,boolSubscript,boolRecommend){
 	var msg_alert = new Array('topBar_light_0','topBar_light_1','topBar_light_2');
 
 	var total_msg = 0;
+	var msg_sep = new Array();
 	msg_alert.forEach(function(entry){	
 		if(document.getElementById(entry).firstChild != null){
 			var spanText = document.getElementById(entry).children[0].innerHTML;
 			var temp_int = parseInt(spanText, 10);
-			total_msg += temp_int;
+				msg_sep.push(temp_int);
+		}else{
+			msg_sep.push(0);
 		}
 	});
+	if(boolNotice) total_msg += msg_sep[0];
+	if(boolSubscript) total_msg += msg_sep[1];
+	if(boolRecommend) total_msg += msg_sep[2];
 
 	if(total_msg > 0){
 		document.title = "(" + total_msg + ") " + title;
