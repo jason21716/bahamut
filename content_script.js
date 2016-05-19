@@ -101,7 +101,7 @@ chrome.storage.local.get(null,function(item){
 					if(isEmpty(item['bookMarkIndex'])){
 						bookMarkIndexArr = new Array(event.target.getAttribute('Msgid')+'-'+event.target.getAttribute('guildId'));
 						chrome.storage.local.set({bookMarkIndex:bookMarkIndexArr});
-					}else if(item['bookMarkIndex'].indexOf(event.target.getAttribute('Msgid')) == -1){
+					}else if(item['bookMarkIndex'].indexOf(event.target.getAttribute('Msgid')+'-'+event.target.getAttribute('guildId')) == -1){
 						item['bookMarkIndex'].push(event.target.getAttribute('Msgid')+'-'+event.target.getAttribute('guildId'));
 						chrome.storage.local.set({bookMarkIndex:item['bookMarkIndex']});
 					}
