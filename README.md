@@ -15,7 +15,7 @@
 
 ##下載位置
 
-本套件目前釋出公測0.0.1版本，安裝檔位於下方連結：
+本套件目前釋出公測0.0.2版本，安裝檔位於下方連結：
 
 https://drive.google.com/folderview?id=0B3XEt4t4uMfuc1lZY2xDTG1yQXc&usp=sharing
 
@@ -30,6 +30,9 @@ https://drive.google.com/folderview?id=0B3XEt4t4uMfuc1lZY2xDTG1yQXc&usp=sharing
 ##改版資訊
 
  - Ver 0.0.1：最初釋放版本，公測瀏覽版
+ - Ver 0.0.2：
+	+ 修正：修正書籤記錄問題、改善書籤按鈕排版
+	+ 新增功能：為設定頁面增加狀態敘述、可自選標題通知的選項
 
  
 ##協作說明
