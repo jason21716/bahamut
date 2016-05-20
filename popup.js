@@ -2,9 +2,11 @@ function changeBtnState(str){
 	if(booleanArr[str]){
 		document.getElementById(str+'On').setAttribute('disabled','disabled');
 		document.getElementById(str+'Off').removeAttribute('disabled');
+		document.getElementById(str+'Status').innerHTML='開啟';
 	}else{
 		document.getElementById(str+'Off').setAttribute('disabled','disabled');
 		document.getElementById(str+'On').removeAttribute('disabled');
+		document.getElementById(str+'Status').innerHTML='關閉';
 	}
 }
 
