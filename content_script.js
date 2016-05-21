@@ -1,15 +1,16 @@
-﻿
+﻿var configArr;
 
 chrome.storage.local.get(null,function(item){
-
+	configArr = item;
+	
 	//Message alert on title
 	if(item['titleNumbers'] === true){
 		var title = document.title;
-		title_msgChange(title,item['titleNumbersCheckNotice']
-					,item['titleNumbersCheckSubscript'],item['titleNumbersCheckRecommend']);
+		title_msgChange(title,configArr['titleNumbersCheckNotice']
+					,configArr['titleNumbersCheckSubscript'],configArr['titleNumbersCheckRecommend']);
 		document.getElementById('BH-top-data').addEventListener("DOMSubtreeModified", function(event){
-			title_msgChange(title,item['titleNumbersCheckNotice']
-					,item['titleNumbersCheckSubscript'],item['titleNumbersCheckRecommend']);
+			title_msgChange(title,configArr['titleNumbersCheckNotice']
+					,configArr['titleNumbersCheckSubscript'],configArr['titleNumbersCheckRecommend']);
 		});
 	}
 
@@ -25,10 +26,11 @@ chrome.storage.local.get(null,function(item){
 		var singleACMsgParme = getSingleACMsgParmeString(pageName[1]);
 		var MsgId = singleACMsgParme[0];
 		var guildId = singleACMsgParme[1];
-		
-		
+		configArr['MsgId'] = MsgId;
+		configArr['guildId'] = guildId;
+
 		//倒轉replyAll與調整replyDiv位置
-		if(item['singleACMsgReverse'] === true){
+		if(configArr['singleACMsgReverse'] === true){			
 			var replyArr = copyReply(MsgId);
 			reverseReply(replyArr,MsgId);
 			
@@ -46,7 +48,7 @@ chrome.storage.local.get(null,function(item){
 		
 		
 		//增加字數提示訊息，新增監聽事件
-		if(item['replyDivWordCount'] === true){
+		if(configArr['replyDivWordCount'] === true){
 			var wordCountDOM = document.createElement("span");
 			wordCountDOM.id = 'bahaext-wordCount';
 			wordCountDOM.style.color = 'red';
@@ -71,59 +73,54 @@ chrome.storage.local.get(null,function(item){
 		}
 		
 		//新增書籤標記按鈕
-		if(item['bookMarkBtn'] === true){
-			var replyMsgHistoryArr = document.getElementsByClassName('msgreport');
-			for (i = 0; i < replyMsgHistoryArr.length; i++) {
-				var newItem = document.createElement("div");
-				var MsgReid = replyMsgHistoryArr[i].id;
-				newItem.id = 'baha-bookMark-'+MsgReid;
-				newItem.className = 'baha-boonMarkBtn';
-				newItem.innerHTML = '設為書籤';
-				newItem.setAttribute('guildId',guildId);
-				newItem.setAttribute('Msgid',MsgId);
-				newItem.setAttribute('replyid',MsgReid);
-				
-				replyMsgHistoryArr[i].insertBefore(newItem, replyMsgHistoryArr[i].childNodes[0]);
-				replyMsgHistoryArr[i].addEventListener('mouseover',function(){
-					this.childNodes[0].style.display='block';
-					this.style.width='570px';
-				});
-				replyMsgHistoryArr[i].addEventListener('mouseout',function(){
-					this.childNodes[0].style.display='none';
-					this.style.width='500px';
-				});
-				document.getElementById('baha-bookMark-'+MsgReid).addEventListener('click',function(event){
-					var chromeBookMarkNameStr = '{"bookmarkName-'+event.target.getAttribute('Msgid')+'":"'+document.getElementsByClassName('msgright')[0].textContent.substr(0,30)+'"}';
-					var chromeBookMarkStr = '{"bookmark-'+event.target.getAttribute('Msgid')+'":"'+event.target.getAttribute('replyid')+'"}';
-					var chromeBookMarkArr = JSON.parse(chromeBookMarkStr);
-					var chromeBookMarkNameArr = JSON.parse(chromeBookMarkNameStr);
-					chrome.storage.local.set(chromeBookMarkArr,function(){});
-					chrome.storage.local.set(chromeBookMarkNameArr,function(){
-						alert('書籤記錄完成!!');
-						document.getElementById(event.target.getAttribute('replyid')).style.backgroundColor='#D0B7C5';
-					});
-					if(isEmpty(item['bookMarkIndex'])){
-						bookMarkIndexArr = new Array(event.target.getAttribute('Msgid')+'-'+event.target.getAttribute('guildId'));
-						chrome.storage.local.set({bookMarkIndex:bookMarkIndexArr});
-					}else if(item['bookMarkIndex'].indexOf(event.target.getAttribute('Msgid')+'-'+event.target.getAttribute('guildId')) == -1){
-						item['bookMarkIndex'].push(event.target.getAttribute('Msgid')+'-'+event.target.getAttribute('guildId'));
-						chrome.storage.local.set({bookMarkIndex:item['bookMarkIndex']});
-					}
-					
-				});
-			}
-			var sheet = document.createElement('style')
+		if(configArr['bookMarkBtn'] === true){
+			setBookMarkBtn();
+			var sheet = document.createElement('style');
 			sheet.innerHTML = ".baha-boonMarkBtn {float:right; border-width:1px; border-color:black;border-style: inset;background-color: #ffffff;padding: 3px; display:none; margin-left: 10px !important; width: 50px; height: 30px;text-align: center; line-height: 30px !important;} .baha-boonMarkBtn:hover {color:red;}";
 			document.body.appendChild(sheet);
 		}
 		//回朔書籤位置
-		if(item['bookmark-'+MsgId] !== undefined){
-			document.getElementById(item['bookmark-'+MsgId]).style.backgroundColor='#D0B7C5';
+		if(configArr['bookmark-'+MsgId] !== undefined){
+			bookMarkChangeColor(configArr['bookmark-'+MsgId]);
 		}
+		//增加定時更新設定欄
+		var autoRefreshDivDom = document.createElement('div');
+		autoRefreshDivDom.id = 'baha-autoRefreshDiv';
+		if(configArr['singleACMsgReverse'] === true){
+			document.getElementsByClassName('msgright')[0].insertBefore(autoRefreshDivDom, document.getElementById('allReply'+MsgId));
+		}else{
+			document.getElementsByClassName('msgright')[0].appendChild(autoRefreshDivDom);
+		}
+
+		var autoRefreshStrDom = document.createElement('p');
+		autoRefreshStrDom.innerHTML = '設定自動更新時間(秒，0為取消)：';
+		autoRefreshStrDom.style.display = 'inline';
+		var autoRefreshInputDom = document.createElement('input');
+		autoRefreshInputDom.type = 'text';
+		autoRefreshInputDom.id = 'baha-autoRefreshInput';
+		autoRefreshInputDom.style.width = '50px';
+		autoRefreshInputDom.style.fontSize = '14px';
+		autoRefreshInputDom.style.marginLeft = '5px';
+		autoRefreshInputDom.style.marginRight = '5px';
+		var autoRefreshBtnDom = document.createElement('button');
+		autoRefreshBtnDom.innerHTML = '送出';
+		autoRefreshBtnDom.id = 'baha-autoRefreshBtn';
+		autoRefreshBtnDom.setAttribute('Msgid',MsgId);
+		var autoRefreshStr2Dom = document.createElement('p');
+		autoRefreshStr2Dom.id = 'baha-autoRefreshStr';
+		autoRefreshStr2Dom.innerHTML = '';
+		autoRefreshStr2Dom.style.display = 'inline';
+		autoRefreshStr2Dom.style.color = 'red';
+		autoRefreshStr2Dom.style.marginLeft = '5px';
+		document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshStrDom);
+		document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshInputDom);
+		document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshBtnDom);
+		document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshStr2Dom);
+		document.getElementById('baha-autoRefreshBtn').addEventListener('click',setAutoRefresh);
 	}
 	else if(pageName[0] == "guild"){
 		//增加字數提示訊息，新增監聽事件
-		if(item['replyDivWordCount'] === true){
+		if(configArr['replyDivWordCount'] === true){
 			var msgWordCountDOM = document.createElement("span");
 			msgWordCountDOM.id = 'bahaext-msgWordCount';
 			msgWordCountDOM.className = 'ST3';

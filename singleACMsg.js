@@ -67,7 +67,7 @@ function enterkeyFix(a, b, c, d, f) {
     a = window.event || a;
     var g = (navigator.appName == "Microsoft Internet Explorer") ? a.keyCode : a.which
       , e = "main" == c ? 600 : 85;
-    13 != g || a.shiftKey ? (countLimit(b, e),
+    13 != g || a.shiftKey ? (countLimitFix2(b, e),
     b.clientHeight < b.scrollHeight && (b.style.height = b.scrollHeight + "px")) : ("main" == c ? checkMsg() : checkReplyFix(d, f),
     a.preventDefault ? a.preventDefault() : a.returnValue = !1)
 }
@@ -99,7 +99,7 @@ function showActiveDivFix(a, b) {
 		c = "" == document.getElementById(a).innerHTML ? c = 1 : parseInt(document.getElementById(a).firstChild.lastChild.lastChild.innerHTML.substr(1)) + 1,
 		document.getElementById(a).innerHTML = buildReplyFix(d, f, g, n, e, 1, a.substr(8), c, l) + document.getElementById(a).innerHTML,
 		document.getElementById("replyMsg" + a.substr(8)).value = "",
-		//Util.ChangeText("r-" + d, Util.ChangeText.FLAG_BALA),
+		Util.ChangeText("r-" + d, Util.ChangeText.FLAG_BALA),
 		document.getElementById("bahaext-replyBtn" + a.substr(8)).disabled = !1;
 }
 
@@ -138,6 +138,118 @@ function getAvatarPic(e, t) {
     return "#gid" == uidlow.substr(0, 4) ? "http://p2.bahamut.com.tw/S/GUILD/c/" + e.substr(4) % 10 + "/" + $.sprintf("%010d", e.substr(4)) + ".PNG" : "http://i2.bahamut.com.tw/none.gif"
 }
 
-function setBookMark(Mid,Mreid){
+function setBookMarkBtn(){
+	var replyMsgHistoryArr = document.getElementsByClassName('msgreport');
+	for (i = 0; i < replyMsgHistoryArr.length; i++) {
+		var newItem = document.createElement("div");
+		var MsgReid = replyMsgHistoryArr[i].id;
+		newItem.id = 'baha-bookMark-'+MsgReid;
+		newItem.className = 'baha-boonMarkBtn';
+		newItem.innerHTML = '設為書籤';
+		newItem.setAttribute('guildId',configArr['guildId']);
+		newItem.setAttribute('Msgid',configArr['MsgId']);
+		newItem.setAttribute('replyid',MsgReid);
+		
+		replyMsgHistoryArr[i].insertBefore(newItem, replyMsgHistoryArr[i].childNodes[0]);
+		replyMsgHistoryArr[i].addEventListener('mouseover',function(){
+			this.childNodes[0].style.display='block';
+			this.style.width='570px';
+		});
+		replyMsgHistoryArr[i].addEventListener('mouseout',function(){
+			this.childNodes[0].style.display='none';
+			this.style.width='500px';
+		});
+		document.getElementById('baha-bookMark-'+MsgReid).addEventListener('click',function(event){
+			var chromeBookMarkNameStr = '{"bookmarkName-'+event.target.getAttribute('Msgid')+'":"'+document.getElementsByClassName('msgright')[0].textContent.substr(0,30)+'"}';
+			var chromeBookMarkStr = '{"bookmark-'+event.target.getAttribute('Msgid')+'":"'+event.target.getAttribute('replyid')+'"}';
+			var chromeBookMarkArr = JSON.parse(chromeBookMarkStr);
+			var chromeBookMarkNameArr = JSON.parse(chromeBookMarkNameStr);
+			chrome.storage.local.set(chromeBookMarkArr,function(){});
+			chrome.storage.local.set(chromeBookMarkNameArr,function(){
+				alert('書籤記錄完成!!');
+				document.getElementById(event.target.getAttribute('replyid')).style.backgroundColor='#D0B7C5';
+				configArr['bookmark-'+event.target.getAttribute('Msgid')] = event.target.getAttribute('replyid');
+			});
+			var configBookMarkArr = configArr['bookMarkIndex'];
+			if(isEmpty(configBookMarkArr)){
+				bookMarkIndexArr = new Array(event.target.getAttribute('Msgid')+'-'+event.target.getAttribute('guildId'));
+				chrome.storage.local.set({bookMarkIndex:bookMarkIndexArr});
+			}else if(configBookMarkArr.indexOf(event.target.getAttribute('Msgid')+'-'+event.target.getAttribute('guildId')) == -1){
+				configBookMarkArr.push(event.target.getAttribute('Msgid')+'-'+event.target.getAttribute('guildId'));
+				chrome.storage.local.set({bookMarkIndex:configBookMarkArr});
+				configArr['bookMarkIndex'] = configBookMarkArr;
+				
+			}
+			
+		});
+	}
+}
+
+function setAutoRefresh(){
+	var timeStr = document.getElementById('baha-autoRefreshInput').value;
+	var timeValue = parseInt(timeStr);
+	var setIntervalNumber = 0;
+	if(!isNaN(timeValue)){
+		if(timeValue > 0){
+			var cancelNumber = parseInt( document.getElementById('baha-autoRefreshBtn').getAttribute('cancelNumber') );
+			if(!isNaN(cancelNumber)){
+				window.clearInterval(cancelNumber);
+				document.getElementById('baha-autoRefreshStr').innerHTML = '';
+			}
+			setIntervalNumber = window.setInterval(autoRefreshFunt,timeValue*1000);
+			document.getElementById('baha-autoRefreshBtn').setAttribute('cancelNumber',setIntervalNumber);
+			document.getElementById('baha-autoRefreshStr').innerHTML = '啟用自動更新中...';
+		}else{
+			var cancelNumber = parseInt( document.getElementById('baha-autoRefreshBtn').getAttribute('cancelNumber') );
+			if(!isNaN(cancelNumber)){
+				window.clearInterval(cancelNumber);
+				document.getElementById('baha-autoRefreshStr').innerHTML = '';
+			}
+		}
+	}
 	
+}
+
+function autoRefreshFunt(){
+	var msgId = configArr['MsgId'];
+	$.ajax({
+		type: "GET",
+		url: "http://api.gamer.com.tw/mobile_app/bahabook/v1/bala_detail.php",
+		data: {_android: 'tw.com.gamer.android.activecenter', sn: msgId , _version: 79},
+		success: function(b) {
+			var replyArr = new Array();
+			var replySnIdArr = new Array();
+			for (i = 0; i < b['reply'].length; i++) {
+				var tempField = b['reply'][i];
+				var isSelf = false;
+				var comment = tempField['comment'].replace(/\n/g,"<br />");
+				var singleReply = buildReplyFix(tempField['sn'], tempField['uid'], tempField['nick'], comment, tempField['date'], (isSelf) ? 1 : 0, b['sn'], i+1, '');
+				replyArr.push(singleReply);
+				replySnIdArr.push(tempField['sn']);
+			}
+			if(configArr['singleACMsgReverse']){
+				replyArr.reverse();
+			}
+			var tempAllReplyHTML = '';
+			for(i = 0; i < replyArr.length; i++){
+				tempAllReplyHTML += replyArr[i];
+			}
+			document.getElementById('allReply'+b['sn']).innerHTML = tempAllReplyHTML;
+			for(i = 0; i < replySnIdArr.length; i++){
+				Util.ChangeText("r-" + replySnIdArr[i], Util.ChangeText.FLAG_BALA);
+			}
+			if(configArr['bookMarkBtn']){
+				setBookMarkBtn();
+			}
+			
+			if(configArr['bookmark-'+configArr['MsgId']] !== undefined){
+				 bookMarkChangeColor(configArr['bookmark-'+configArr['MsgId']]);
+			}
+        }
+	})
+}
+
+//buildReply(85147253,'copsign','鵼','往下鑽！','昨天22:50',0,23547118,5,'');
+function bookMarkChangeColor(snid){
+	document.getElementById(snid).style.backgroundColor='#D0B7C5';
 }

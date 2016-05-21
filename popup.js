@@ -99,6 +99,11 @@ chrome.storage.local.get(null,function(item){
 					'<button type="button" class="btn btn-danger btn-sm" id="'+'delete'+Msgid+'-'+gid+'" gid="'+gid+'" msgid="'+Msgid+'">刪除書籤</button>'+
 					'</td></tr>';
 		document.getElementById('bookMarkContent').innerHTML += trStr;
+	}
+	
+	for(i = 0; i < item['bookMarkIndex'].length; i++){
+		var indexStr = item['bookMarkIndex'][i];
+		var Msgid = indexStr.split('-')[0];
 		document.getElementById('link'+Msgid+'-'+gid).addEventListener('click',function(event){
 			chrome.tabs.create({ url: event.target.getAttribute('hrf') });
 		});
