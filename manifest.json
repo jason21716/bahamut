@@ -17,7 +17,7 @@
 		"scripts": ["utility.js","background.js"] 
 	},
 	
-	"permissions": ["tabs","storage","activeTab","http://guild.gamer.com.tw/*","http://api.gamer.com.tw/*"],
+	"permissions": ["tabs","storage","activeTab","http://guild.gamer.com.tw/*"],
 	
 	"page_action": 
 	{
@@ -45,8 +45,7 @@
 		  "*"
 		],
 		"matches": [
-		  "http://guild.gamer.com.tw/*",
-		  "http://api.gamer.com.tw/*"
+		  "http://guild.gamer.com.tw/*"
 		],
 		"accepts_tls_channel_id": false
 	}

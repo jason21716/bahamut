@@ -212,7 +212,8 @@ function setAutoRefresh(){
 
 function autoRefreshFunt(){
 	var msgId = configArr['MsgId'];
-	$.ajax({
+	var guildId = configArr['guildId'];
+	/*$.ajax({
 		type: "GET",
 		url: "http://api.gamer.com.tw/mobile_app/bahabook/v1/bala_detail.php",
 		data: {_android: 'tw.com.gamer.android.activecenter', sn: msgId , _version: 79},
@@ -235,6 +236,54 @@ function autoRefreshFunt(){
 				tempAllReplyHTML += replyArr[i];
 			}
 			document.getElementById('allReply'+b['sn']).innerHTML = tempAllReplyHTML;
+			for(i = 0; i < replySnIdArr.length; i++){
+				Util.ChangeText("r-" + replySnIdArr[i], Util.ChangeText.FLAG_BALA);
+			}
+			if(configArr['bookMarkBtn']){
+				setBookMarkBtn();
+			}
+			
+			if(configArr['bookmark-'+configArr['MsgId']] !== undefined){
+				 bookMarkChangeColor(configArr['bookmark-'+configArr['MsgId']]);
+			}
+        }
+	})*/
+	
+	$.ajax({
+		type: "GET",
+		url: "http://guild.gamer.com.tw/singleACMsg.php",
+		data: {sn: msgId , gsn: guildId},
+		success: function(b) {
+			
+			var replySnIdArr = new Array();
+			var replyArr = new Array();
+			var replyArrTemp = b.match(/buildReply\([0-9]+\,\'[^\']+\'\,\'[^\']+\'\,\'[^\']+\'\,\'[^\']+\'\,[^\,]+\,[0-9]+\,[0-9]+\,\'[^\']*\'\)\;/g);
+			
+			$.each(replyArrTemp, function(i, item) {
+				var temp = item.match(/buildReply\(([0-9]+)\,\'([^\']+)\'\,\'([^\']+)\'\,\'([^\']+)\'\,\'([^\']+)\'\,([^\,]+)\,([0-9]+)\,([0-9]+)\,\'[^\']*\'\)\;/);
+				var snID = RegExp.$1;
+				var userID = RegExp.$2;
+				var user = RegExp.$3;
+				var content = RegExp.$4;
+				var time = RegExp.$5;
+				var isSelf = RegExp.$6;
+				var msgID = RegExp.$7;
+				var replyCount = RegExp.$8;
+				content = content.replace(/\<br \/\>/g, '\n');
+
+				var singleReply = buildReplyFix(snID, userID, user, content, time, isSelf, msgID, replyCount, '');
+				replyArr.push(singleReply);
+				replySnIdArr.push(snID);
+			});
+			
+			if(configArr['singleACMsgReverse']){
+				replyArr.reverse();
+			}
+			var tempAllReplyHTML = '';
+			for(i = 0; i < replyArr.length; i++){
+				tempAllReplyHTML += replyArr[i];
+			}
+			document.getElementById('allReply'+configArr['MsgId']).innerHTML = tempAllReplyHTML;
 			for(i = 0; i < replySnIdArr.length; i++){
 				Util.ChangeText("r-" + replySnIdArr[i], Util.ChangeText.FLAG_BALA);
 			}
