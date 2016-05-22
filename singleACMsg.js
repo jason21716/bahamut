@@ -213,41 +213,6 @@ function setAutoRefresh(){
 function autoRefreshFunt(){
 	var msgId = configArr['MsgId'];
 	var guildId = configArr['guildId'];
-	/*$.ajax({
-		type: "GET",
-		url: "http://api.gamer.com.tw/mobile_app/bahabook/v1/bala_detail.php",
-		data: {_android: 'tw.com.gamer.android.activecenter', sn: msgId , _version: 79},
-		success: function(b) {
-			var replyArr = new Array();
-			var replySnIdArr = new Array();
-			for (i = 0; i < b['reply'].length; i++) {
-				var tempField = b['reply'][i];
-				var isSelf = false;
-				var comment = tempField['comment'].replace(/\n/g,"<br />");
-				var singleReply = buildReplyFix(tempField['sn'], tempField['uid'], tempField['nick'], comment, tempField['date'], (isSelf) ? 1 : 0, b['sn'], i+1, '');
-				replyArr.push(singleReply);
-				replySnIdArr.push(tempField['sn']);
-			}
-			if(configArr['singleACMsgReverse']){
-				replyArr.reverse();
-			}
-			var tempAllReplyHTML = '';
-			for(i = 0; i < replyArr.length; i++){
-				tempAllReplyHTML += replyArr[i];
-			}
-			document.getElementById('allReply'+b['sn']).innerHTML = tempAllReplyHTML;
-			for(i = 0; i < replySnIdArr.length; i++){
-				Util.ChangeText("r-" + replySnIdArr[i], Util.ChangeText.FLAG_BALA);
-			}
-			if(configArr['bookMarkBtn']){
-				setBookMarkBtn();
-			}
-			
-			if(configArr['bookmark-'+configArr['MsgId']] !== undefined){
-				 bookMarkChangeColor(configArr['bookmark-'+configArr['MsgId']]);
-			}
-        }
-	})*/
 	
 	$.ajax({
 		type: "GET",
@@ -298,7 +263,6 @@ function autoRefreshFunt(){
 	})
 }
 
-//buildReply(85147253,'copsign','鵼','往下鑽！','昨天22:50',0,23547118,5,'');
 function bookMarkChangeColor(snid){
 	document.getElementById(snid).style.backgroundColor='#D0B7C5';
 }
