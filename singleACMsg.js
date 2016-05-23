@@ -234,7 +234,8 @@ function autoRefreshFunt(){
 				var isSelf = RegExp.$6;
 				var msgID = RegExp.$7;
 				var replyCount = RegExp.$8;
-				content = content.replace(/\<br \/\>/g, '\n');
+				content = content.replace(/\&ensp/g,' ');
+				content = content.replace(/\&emsp/g,'　');
 
 				var singleReply = buildReplyFix(snID, userID, user, content, time, isSelf, msgID, replyCount, '');
 				replyArr.push(singleReply);
