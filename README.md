@@ -18,7 +18,7 @@
 
 本套件目前釋出公開測試0.1.1版本，安裝檔位於下方連結：
 
-https://chrome.google.com/webstore/detail/djkpifkbekldccfolbjkeodflnlajfka/publish-accepted?hl=zh-TW
+https://chrome.google.com/webstore/detail/%E5%B7%B4%E5%93%88%E5%A7%86%E7%89%B9%E5%85%AC%E6%9C%83%E6%93%B4%E5%85%85%E5%A5%97%E4%BB%B6/djkpifkbekldccfolbjkeodflnlajfka?hl=zh-TW
 
 以chrome瀏覽器下載後應該會自動安裝，如果沒有安裝，請進入『擴充套件』頁面，並將下載之檔案拖曳至頁面上即可安裝此套件。
 
