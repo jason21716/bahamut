@@ -2,7 +2,7 @@
 
 ##擴充套件起由
 
-本套件是起源於對巴哈姆特公會區的種種不滿所形成的，小弟是巴哈姆特RPG公會的成員之一，因為工會使用哈拉串功能進行類似角色扮演的活動，但是公會區的介面並不完善，為求更加方便的進行活動，於是展開本次擴充套件計畫。
+本套件是起源於對巴哈姆特公會區的種種不滿所形成的，小弟是巴哈姆特RPG公會的成員之一，因為公會使用哈拉串功能進行類似角色扮演的活動，但是公會區的介面並不完善，為求更加方便的進行活動，於是展開本次擴充套件計畫。
 	 
 ##功能介紹
  
@@ -16,9 +16,9 @@
  
 ##下載位置
 
-本套件目前釋出先行測試測0.1.1版本，安裝檔位於下方連結：
+本套件目前釋出公開測試0.1.1版本，安裝檔位於下方連結：
 
-https://drive.google.com/folderview?id=0B3XEt4t4uMfuc1lZY2xDTG1yQXc&usp=sharing
+https://chrome.google.com/webstore/detail/djkpifkbekldccfolbjkeodflnlajfka/publish-accepted?hl=zh-TW
 
 以chrome瀏覽器下載後應該會自動安裝，如果沒有安裝，請進入『擴充套件』頁面，並將下載之檔案拖曳至頁面上即可安裝此套件。
 
@@ -44,7 +44,7 @@ https://drive.google.com/folderview?id=0B3XEt4t4uMfuc1lZY2xDTG1yQXc&usp=sharing
  
 ##關於作者
 
-海角一沙鷗，英文名Jason，一個喜歡RPG公會但其實不怎麼會寫故事的人，專長是JAVA、PHP，以Javascript寫成的Chrome還是第一次寫....
+海角一沙鷗，英文名Jason，一個喜歡RPG公會但其實不怎麼會寫故事的人，專長是JAVA、PHP，以Javascript寫成的Chrome插件還是第一次寫....
 
 Email：a8832a0066  (此處應有小老鼠)  gmail.com
 
