@@ -14,6 +14,13 @@ chrome.storage.local.get(null,function(item){
 		});
 	}
 
+	//who are you?
+	var selfDOM = document.getElementsByClassName('TOP-my')[0].getElementsByTagName('li')[4].childNodes[0];
+	var selfDOMMatch = selfDOM.href.match(/http\:\/\/home\.gamer\.com\.tw\/([a-z A-Z 0-9]*)/); 
+	configArr['controller'] = selfDOMMatch[1];
+	console.log(configArr['controller']);
+	//
+	
 	//網址解析
 	var urls = getDomainFromUrl(window.location.href);
 	var pageName = getPHPFileNameString(urls[1]);
@@ -95,8 +102,23 @@ chrome.storage.local.get(null,function(item){
 			document.getElementsByClassName('msgright')[0].appendChild(autoRefreshDivDom);
 		}
 		
-		var mainText = document.getElementsByClassName('msgright')[0].textContent;
-		if(mainText.indexOf('[[STOP-AUTO-REFRESH]]') == -1){
+		var msgrightDOM = document.getElementsByClassName('msgright')[0];
+		var msgControllerDOM = msgrightDOM.getElementsByTagName('a')[0];
+		var isOwner;
+		if(msgControllerDOM.textContent == '刪除'){
+			isOwner = true;
+			configArr['isOwner'] = isOwner;
+		}
+		else{
+			var msgControllerDOMMatch = msgControllerDOM.href.match(/http\:\/\/home\.gamer\.com\.tw\/home\.php\?owner\=([a-z A-Z 0-9]*)/); 
+			var msgController = msgControllerDOMMatch[1];
+			console.log(msgController);
+			isOwner = false;
+		}
+		configArr['isOwner'] = isOwner;
+		
+		var mainText = msgrightDOM.textContent;
+		if(mainText.indexOf('[[STOP-AUTO-REFRESH]]') == -1 || configArr['isOwner']){
 			var autoRefreshStrDom = document.createElement('p');
 			autoRefreshStrDom.innerHTML = '設定自動更新時間(秒，0為取消)：';
 			autoRefreshStrDom.style.display = 'inline';

@@ -266,7 +266,7 @@ function autoRefreshFunt(){
 				 bookMarkChangeColor(configArr['bookmark-'+configArr['MsgId']]);
 			}
 			
-			if(stopFlag){
+			if(stopFlag && !configArr['isOwner']){
 				document.getElementById('baha-autoRefreshInput').value = 0;
 				setAutoRefresh();
 				document.getElementById('baha-autoRefreshStr').innerHTML = '自動更新已被開串者要求關閉';
