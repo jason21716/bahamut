@@ -52,7 +52,10 @@ chrome.storage.local.get(null,function(item){
 			var wordCountDOM = document.createElement("span");
 			wordCountDOM.id = 'bahaext-wordCount';
 			wordCountDOM.style.color = 'red';
-			document.getElementsByClassName('msgitembar')[0].appendChild(wordCountDOM);
+			if(configArr['singleACMsgReverse'] === true)
+				document.getElementsByClassName('msgitembar')[0].appendChild(wordCountDOM);
+			else
+				document.getElementById('replyDiv'+MsgId).appendChild(wordCountDOM);
 			document.getElementById('replyMsg'+MsgId).addEventListener("input", function(){
 				var msgBox = document.getElementById('replyMsg'+MsgId);
 				if(countLimitFix(msgBox,85) < 0){
