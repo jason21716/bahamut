@@ -94,32 +94,35 @@ chrome.storage.local.get(null,function(item){
 		}else{
 			document.getElementsByClassName('msgright')[0].appendChild(autoRefreshDivDom);
 		}
-
-		var autoRefreshStrDom = document.createElement('p');
-		autoRefreshStrDom.innerHTML = '設定自動更新時間(秒，0為取消)：';
-		autoRefreshStrDom.style.display = 'inline';
-		var autoRefreshInputDom = document.createElement('input');
-		autoRefreshInputDom.type = 'text';
-		autoRefreshInputDom.id = 'baha-autoRefreshInput';
-		autoRefreshInputDom.style.width = '50px';
-		autoRefreshInputDom.style.fontSize = '14px';
-		autoRefreshInputDom.style.marginLeft = '5px';
-		autoRefreshInputDom.style.marginRight = '5px';
-		var autoRefreshBtnDom = document.createElement('button');
-		autoRefreshBtnDom.innerHTML = '送出';
-		autoRefreshBtnDom.id = 'baha-autoRefreshBtn';
-		autoRefreshBtnDom.setAttribute('Msgid',MsgId);
-		var autoRefreshStr2Dom = document.createElement('p');
-		autoRefreshStr2Dom.id = 'baha-autoRefreshStr';
-		autoRefreshStr2Dom.innerHTML = '';
-		autoRefreshStr2Dom.style.display = 'inline';
-		autoRefreshStr2Dom.style.color = 'red';
-		autoRefreshStr2Dom.style.marginLeft = '5px';
-		document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshStrDom);
-		document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshInputDom);
-		document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshBtnDom);
-		document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshStr2Dom);
-		document.getElementById('baha-autoRefreshBtn').addEventListener('click',setAutoRefresh);
+		
+		var mainText = document.getElementsByClassName('msgright')[0].textContent;
+		if(mainText.indexOf('[[STOP-AUTO-REFRESH]]') == -1){
+			var autoRefreshStrDom = document.createElement('p');
+			autoRefreshStrDom.innerHTML = '設定自動更新時間(秒，0為取消)：';
+			autoRefreshStrDom.style.display = 'inline';
+			var autoRefreshInputDom = document.createElement('input');
+			autoRefreshInputDom.type = 'text';
+			autoRefreshInputDom.id = 'baha-autoRefreshInput';
+			autoRefreshInputDom.style.width = '50px';
+			autoRefreshInputDom.style.fontSize = '14px';
+			autoRefreshInputDom.style.marginLeft = '5px';
+			autoRefreshInputDom.style.marginRight = '5px';
+			var autoRefreshBtnDom = document.createElement('button');
+			autoRefreshBtnDom.innerHTML = '送出';
+			autoRefreshBtnDom.id = 'baha-autoRefreshBtn';
+			autoRefreshBtnDom.setAttribute('Msgid',MsgId);
+			var autoRefreshStr2Dom = document.createElement('p');
+			autoRefreshStr2Dom.id = 'baha-autoRefreshStr';
+			autoRefreshStr2Dom.innerHTML = '';
+			autoRefreshStr2Dom.style.display = 'inline';
+			autoRefreshStr2Dom.style.color = 'red';
+			autoRefreshStr2Dom.style.marginLeft = '5px';
+			document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshStrDom);
+			document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshInputDom);
+			document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshBtnDom);
+			document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshStr2Dom);
+			document.getElementById('baha-autoRefreshBtn').addEventListener('click',setAutoRefresh);
+		}
 	}
 	else if(pageName[0] == "guild"){
 		//增加字數提示訊息，新增監聽事件

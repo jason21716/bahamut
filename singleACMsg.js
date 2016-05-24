@@ -224,6 +224,8 @@ function autoRefreshFunt(){
 			var replyArr = new Array();
 			var replyArrTemp = b.match(/buildReply\([0-9]+\,\'[^\']+\'\,\'[^\']+\'\,\'[^\']+\'\,\'[^\']+\'\,[^\,]+\,[0-9]+\,[0-9]+\,\'[^\']*\'\)\;/g);
 			
+			var stopFlag = false;
+			
 			$.each(replyArrTemp, function(i, item) {
 				var temp = item.match(/buildReply\(([0-9]+)\,\'([^\']+)\'\,\'([^\']+)\'\,\'([^\']+)\'\,\'([^\']+)\'\,([^\,]+)\,([0-9]+)\,([0-9]+)\,\'[^\']*\'\)\;/);
 				var snID = RegExp.$1;
@@ -236,6 +238,9 @@ function autoRefreshFunt(){
 				var replyCount = RegExp.$8;
 				content = content.replace(/\&ensp/g,' ');
 				content = content.replace(/\&emsp/g,'　');
+				if(content.indexOf('[[STOP-AUTO-REFRESH]]') != -1){
+					stopFlag = true;
+				}
 
 				var singleReply = buildReplyFix(snID, userID, user, content, time, isSelf, msgID, replyCount, '');
 				replyArr.push(singleReply);
@@ -259,6 +264,12 @@ function autoRefreshFunt(){
 			
 			if(configArr['bookmark-'+configArr['MsgId']] !== undefined){
 				 bookMarkChangeColor(configArr['bookmark-'+configArr['MsgId']]);
+			}
+			
+			if(stopFlag){
+				document.getElementById('baha-autoRefreshInput').value = 0;
+				setAutoRefresh();
+				document.getElementById('baha-autoRefreshStr').innerHTML = '自動更新已被開串者要求關閉';
 			}
         }
 	})
