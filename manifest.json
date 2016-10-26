@@ -3,7 +3,7 @@
 
 	"name": "巴哈姆特公會擴充套件",
 	"description": "增進巴哈姆特公會對串體驗",
-	"version": "0.1.1.4",
+	"version": "0.1.1.5",
 	"icons": 
 	{ 
 		"19": "baha19.png",
@@ -17,7 +17,7 @@
 		"scripts": ["utility.js","background.js"] 
 	},
 	
-	"permissions": ["tabs","storage","activeTab","http://guild.gamer.com.tw/*"],
+	"permissions": ["tabs","storage","activeTab","http://guild.gamer.com.tw/*","https://guild.gamer.com.tw/*"],
 	
 	"page_action": 
 	{
@@ -33,7 +33,7 @@
 	"content_scripts":
 	[
 		{
-		"matches":["http://guild.gamer.com.tw/*"],
+		"matches":["http://guild.gamer.com.tw/*","https://guild.gamer.com.tw/*"],
 		"js":["jquery-2.0.0.min.js","utility.js","singleACMsg.js","content_script.js"]
 		}		
 	],
@@ -45,7 +45,7 @@
 		  "*"
 		],
 		"matches": [
-		  "http://guild.gamer.com.tw/*"
+		  "http://guild.gamer.com.tw/*","https://guild.gamer.com.tw/*"
 		],
 		"accepts_tls_channel_id": false
 	}
