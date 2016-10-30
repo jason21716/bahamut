@@ -216,7 +216,7 @@ function autoRefreshFunt(){
 	
 	$.ajax({
 		type: "GET",
-		url: "http://guild.gamer.com.tw/singleACMsg.php",
+		url: "https://guild.gamer.com.tw/singleACMsg.php",
 		data: {sn: msgId , gsn: guildId},
 		success: function(b) {
 			
