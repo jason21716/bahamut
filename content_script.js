@@ -110,8 +110,9 @@ chrome.storage.local.get(null,function(item){
 			configArr['isOwner'] = isOwner;
 		}
 		else{
-			var msgControllerDOMMatch = msgControllerDOM.href.match(/http\:\/\/home\.gamer\.com\.tw\/home\.php\?owner\=([a-z A-Z 0-9]*)/); 
+			var msgControllerDOMMatch = msgControllerDOM.href.match(/https\:\/\/home\.gamer\.com\.tw\/home\.php\?owner\=([a-z A-Z 0-9]*)/); 
 			var msgController = msgControllerDOMMatch[1];
+			console.log(msgController);
 			console.log(msgController);
 			isOwner = false;
 		}
