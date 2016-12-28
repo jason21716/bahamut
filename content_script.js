@@ -16,7 +16,7 @@ chrome.storage.local.get(null,function(item){
 
 	//who are you?
 	var selfDOM = document.getElementsByClassName('TOP-my')[0].getElementsByTagName('li')[3].childNodes[0];
-	var selfDOMMatch = selfDOM.href.match(/http\:\/\/home\.gamer\.com\.tw\/([a-z A-Z 0-9]*)/); 
+	var selfDOMMatch = selfDOM.href.match(/https\:\/\/home\.gamer\.com\.tw\/([a-z A-Z 0-9]*)/); 
 	configArr['controller'] = selfDOMMatch[1];
 	console.log(configArr['controller']);
 	//
