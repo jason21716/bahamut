@@ -3,13 +3,24 @@
 chrome.storage.local.get(null,function(item){
 	configArr = item;
 	
+	
+	
+	//增加修改網頁標題功能
+	ORGINAL_TITLE = document.title;
+	NEW_TITLE = document.title;
+	var BH_menuE_appendDOM_link = document.createElement("a");
+	BH_menuE_appendDOM_link.innerHTML = "更改網頁標題";
+	var BH_menuE_appendDOM = document.createElement("li");
+	BH_menuE_appendDOM.appendChild(BH_menuE_appendDOM_link);
+	document.getElementsByClassName('BH-menuE')[0].appendChild(BH_menuE_appendDOM);
+	BH_menuE_appendDOM_link.addEventListener("click", changePageTitle);
+	
 	//Message alert on title
 	if(item['titleNumbers'] === true){
-		var title = document.title;
-		title_msgChange(title,configArr['titleNumbersCheckNotice']
+		title_msgChange(NEW_TITLE,configArr['titleNumbersCheckNotice']
 					,configArr['titleNumbersCheckSubscript'],configArr['titleNumbersCheckRecommend']);
 		document.getElementById('BH-top-data').addEventListener("DOMSubtreeModified", function(event){
-			title_msgChange(title,configArr['titleNumbersCheckNotice']
+			title_msgChange(NEW_TITLE,configArr['titleNumbersCheckNotice']
 					,configArr['titleNumbersCheckSubscript'],configArr['titleNumbersCheckRecommend']);
 		});
 	}
@@ -35,7 +46,7 @@ chrome.storage.local.get(null,function(item){
 		var guildId = singleACMsgParme[1];
 		configArr['MsgId'] = MsgId;
 		configArr['guildId'] = guildId;
-
+		
 		//倒轉replyAll與調整replyDiv位置
 		if(configArr['singleACMsgReverse'] === true){			
 			var replyArr = copyReply(MsgId);
@@ -53,6 +64,48 @@ chrome.storage.local.get(null,function(item){
 			document.getElementById('replyMsg'+MsgId).addEventListener("keypress", funMsg(event,this,MsgId,guildId));
 		}
 		
+		//新增監聽Mmessage事件
+		chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+			console.log('message received:' +request.message +' /' + request.text);
+			if (request.message == "fastResponse"){
+				fastResponseFunt(MsgId,request.text);
+			}
+		});
+		
+		//修改右鍵選單
+		document.getElementById('replyDiv'+MsgId).className = 'context-menu-replyDiv';
+		$(function() {
+			$.contextMenu({
+				selector: '.context-menu-replyDiv', 
+				callback: function(key, options) {
+					fastResponseFunt(MsgId,configArr[key]);
+				},
+				items: {
+					"clean":{
+						"name": "清空內容", 
+						"icon": function($element, key, item){ return 'context-menu-icon context-menu-icon-quit'; },
+						"callback":function(key, options) {
+							document.getElementById('replyMsg'+MsgId).value='';
+							document.getElementById('replyMsg'+MsgId).focus();
+						}
+					},
+					"fastResponse": {
+						"name": "快速回覆...", 
+						"icon": "edit",
+						"items": {
+							"fastResponse1": {"name": configArr['fastResponse1name']},
+							"fastResponse2": {"name": configArr['fastResponse2name']},
+							"fastResponse3": {"name": configArr['fastResponse3name']},
+							"fastResponse4": {"name": configArr['fastResponse4name']},
+							"fastResponse5": {"name": configArr['fastResponse5name']},
+							"fastResponse6": {"name": configArr['fastResponse6name']},
+							"fastResponse7": {"name": configArr['fastResponse7name']},
+							"fastResponse8": {"name": configArr['fastResponse8name']}
+						}
+					}
+				}
+			});   
+		});
 		
 		//增加字數提示訊息，新增監聽事件
 		if(configArr['replyDivWordCount'] === true){
@@ -102,6 +155,7 @@ chrome.storage.local.get(null,function(item){
 			document.getElementsByClassName('msgright')[0].appendChild(autoRefreshDivDom);
 		}
 		
+			//確認是否為該串擁有者
 		var msgrightDOM = document.getElementsByClassName('msgright')[0];
 		var msgControllerDOM = msgrightDOM.getElementsByTagName('a')[0];
 		var isOwner;
@@ -140,12 +194,24 @@ chrome.storage.local.get(null,function(item){
 			autoRefreshStr2Dom.style.display = 'inline';
 			autoRefreshStr2Dom.style.color = 'red';
 			autoRefreshStr2Dom.style.marginLeft = '5px';
+			var autoRefreshInput2Dom = document.createElement('input');
+			autoRefreshInput2Dom.id = 'baha-autoRefreshCheck';
+			autoRefreshInput2Dom.type = 'checkbox';
+			var autoRefreshStr3Dom = document.createElement('p');
+			autoRefreshStr3Dom.innerHTML = '啟動桌面通知功能';
+			autoRefreshStr3Dom.style.display = 'inline';
 			document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshStrDom);
 			document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshInputDom);
 			document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshBtnDom);
 			document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshStr2Dom);
+			document.getElementById('baha-autoRefreshDiv').appendChild(document.createElement('br'));
+			document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshInput2Dom);
+			document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshStr3Dom);
 			document.getElementById('baha-autoRefreshBtn').addEventListener('click',setAutoRefresh);
 		}
+		
+		
+		
 	}
 	else if(pageName[0] == "guild"){
 		//增加字數提示訊息，新增監聽事件

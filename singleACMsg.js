@@ -199,6 +199,13 @@ function setAutoRefresh(){
 			setIntervalNumber = window.setInterval(autoRefreshFunt,timeValue*1000);
 			document.getElementById('baha-autoRefreshBtn').setAttribute('cancelNumber',setIntervalNumber);
 			document.getElementById('baha-autoRefreshStr').innerHTML = '啟用自動更新中...';
+			
+			MSGRE_MAX = -1;
+			if(document.getElementById('baha-autoRefreshCheck').checked){
+				MSGRE_NOTIFYID = '';
+				MSGRE_MAX = document.getElementById('allReply'+configArr['MsgId']).childElementCount;
+				document.getElementById('baha-autoRefreshStr').innerHTML = '啟用自動更新中...(通知已啟動)';
+			}
 		}else{
 			var cancelNumber = parseInt( document.getElementById('baha-autoRefreshBtn').getAttribute('cancelNumber') );
 			if(!isNaN(cancelNumber)){
@@ -225,7 +232,7 @@ function autoRefreshFunt(){
 			var replyArrTemp = b.match(/buildReply\([0-9]+\,\'[^\']+\'\,\'[^\']+\'\,\'[^\']+\'\,\'[^\']+\'\,[^\,]+\,[0-9]+\,[0-9]+\,\'[^\']*\'\)\;/g);
 			
 			var stopFlag = false;
-			
+			var lastResponseUserId;
 			$.each(replyArrTemp, function(i, item) {
 				var temp = item.match(/buildReply\(([0-9]+)\,\'([^\']+)\'\,\'([^\']+)\'\,\'([^\']+)\'\,\'([^\']+)\'\,([^\,]+)\,([0-9]+)\,([0-9]+)\,\'[^\']*\'\)\;/);
 				var snID = RegExp.$1;
@@ -245,6 +252,7 @@ function autoRefreshFunt(){
 				var singleReply = buildReplyFix(snID, userID, user, content, time, isSelf, msgID, replyCount, '');
 				replyArr.push(singleReply);
 				replySnIdArr.push(snID);
+				lastResponseUserId = userID;
 			});
 			
 			if(configArr['singleACMsgReverse']){
@@ -271,10 +279,39 @@ function autoRefreshFunt(){
 				setAutoRefresh();
 				document.getElementById('baha-autoRefreshStr').innerHTML = '自動更新已被開串者要求關閉';
 			}
+			
+			if(document.getElementById('baha-autoRefreshCheck').checked){
+				var last_check = 0;
+				last_check = document.getElementById('allReply'+configArr['MsgId']).childElementCount;
+				
+				if(MSGRE_MAX < last_check && lastResponseUserId != configArr['controller']){
+					var text = (NEW_TITLE != ORGINAL_TITLE) 
+						? '分頁：' + NEW_TITLE
+						: document.getElementsByClassName('msgright')[0].textContent.substr(0,20);
+					var number = last_check
+					chrome.runtime.sendMessage(
+						{
+							greeting: "nofity",
+							rid: configArr['MsgId']+last_check,
+							text: text,
+							num: number
+						}
+					)
+					MSGRE_MAX = last_check;
+				}
+				document.getElementById('baha-autoRefreshStr').innerHTML = '啟用自動更新中...(通知已啟動)';
+			}else{
+				document.getElementById('baha-autoRefreshStr').innerHTML = '啟用自動更新中...';
+			}
         }
 	})
 }
 
 function bookMarkChangeColor(snid){
 	document.getElementById(snid).style.backgroundColor='#D0B7C5';
+}
+
+function fastResponseFunt(snid,text){
+	document.getElementById('replyMsg'+ snid).value += text;
+	document.getElementById('replyMsg'+ snid).focus();
 }

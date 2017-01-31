@@ -3,7 +3,7 @@
 
 	"name": "巴哈姆特公會擴充套件",
 	"description": "增進巴哈姆特公會對串體驗",
-	"version": "0.1.1.8",
+	"version": "0.2.0.0",
 	"icons": 
 	{ 
 		"19": "baha19.png",
@@ -12,12 +12,18 @@
         "128": "baha128.png" 
 	},
 	
+	"options_ui": {
+		"page": "options.html",
+		"chrome_style": true
+		//"open_in_tab": true
+	},
+	
 	"background": 
 	{ 
 		"scripts": ["utility.js","background.js"] 
 	},
 	
-	"permissions": ["tabs","storage","activeTab","http://guild.gamer.com.tw/*","https://guild.gamer.com.tw/*"],
+	"permissions": ["tabs","storage","activeTab","http://guild.gamer.com.tw/*","https://guild.gamer.com.tw/*","notifications"],
 	
 	"page_action": 
 	{
@@ -34,7 +40,12 @@
 	[
 		{
 		"matches":["http://guild.gamer.com.tw/*","https://guild.gamer.com.tw/*"],
-		"js":["jquery-2.0.0.min.js","utility.js","singleACMsg.js","content_script.js"]
+		"css":["contextmenu/jquery.contextMenu.css"],
+		"js":[
+			"jquery-2.0.0.min.js",
+			"contextmenu/jquery.ui.position.js","contextmenu/jquery.contextMenu.js",
+			"utility.js","singleACMsg.js","content_script.js"
+			]
 		}		
 	],
 	
@@ -48,5 +59,36 @@
 		  "http://guild.gamer.com.tw/*","https://guild.gamer.com.tw/*"
 		],
 		"accepts_tls_channel_id": false
-	}
+	},
+	
+	"commands": {
+		"fastResponce_1":{
+			"suggested_key": {
+				"default": "Ctrl+Shift+1"
+			},
+			"description": "Send fast response 1."
+		},
+		"fastResponce_2":{
+			"suggested_key": {
+				"default": "Ctrl+Shift+2"
+			},
+			"description": "Send fast response 2."
+		},
+		"fastResponce_3":{
+			"suggested_key": {
+				"default": "Ctrl+Shift+3"
+			},
+			"description": "Send fast response 3."
+		},
+		"fastResponce_4":{
+			"suggested_key": {
+				"default": "Ctrl+Shift+4"
+			},
+			"description": "Send fast response 4."
+		}
+	},
+	
+	"web_accessible_resources": [
+		"contextmenu/font/*.*"
+	]
 }

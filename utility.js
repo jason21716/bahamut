@@ -22,7 +22,13 @@ function getPHPFileNameString(s){
     return host;
 }
 
-
+function changePageTitle(){
+	var newtitle = prompt("請輸入網頁的新標題",ORGINAL_TITLE)
+	if(newtitle){
+		document.title = newtitle;
+		NEW_TITLE = newtitle;
+	}
+}
 
 function title_msgChange(title,boolNotice,boolSubscript,boolRecommend){
 	var msg_alert = new Array('topBar_light_0','topBar_light_1','topBar_light_2');
