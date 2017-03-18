@@ -47,6 +47,9 @@ chrome.storage.local.get(null,function(item){
 		configArr['MsgId'] = MsgId;
 		configArr['guildId'] = guildId;
 		
+		//新增右側部分檢視區塊
+		addRightContent();
+		
 		//倒轉replyAll與調整replyDiv位置
 		if(configArr['singleACMsgReverse'] === true){			
 			var replyArr = copyReply(MsgId);

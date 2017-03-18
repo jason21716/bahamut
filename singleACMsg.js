@@ -1,6 +1,6 @@
 function getSingleACMsgParmeString(s){
 	var host = null;
-	
+
 	var regex = /\?sn=([^\/]*)\&gsn\=([^\/]*)/;
 	var match = s.match(regex);
 	if(typeof match != "undefined" && null != match){
@@ -11,10 +11,10 @@ function getSingleACMsgParmeString(s){
 
 function copyReply(id){
 	var replyDOM = document.getElementById('allReply'+id);
-	
+
 	var replyObj = replyDOM.children;
 	var replyArr = Array.prototype.slice.call(replyObj);
-	
+
 	return replyArr;
 }
 
@@ -74,7 +74,7 @@ function enterkeyFix(a, b, c, d, f) {
 
 function checkReplyFix(a, b) {
     var c = document.getElementById("replyMsg" + a)
-      , d = c.value;  
+      , d = c.value;
     countLimitFix2(c, 85) || ("" == d.replace(/(^\s*)|(\s*$)/g, "") ? (alert("\u8acb\u8f38\u5165\u7559\u8a00"),
     c.focus()) : document.getElementById("bahaext-replyBtn" + a).disabled ? alert("\u8655\u7406\u4e2d\uff0c\u8acb\u7a0d\u5019") : (document.getElementById("bahaext-replyBtn" + a).disabled = !0,
     $.ajax({
@@ -107,7 +107,7 @@ function buildReplyFix(a, b, c, d, f, g, e, n, l) {
     var h = ""
       , h = '<div id="r-' + a + '" name="r-' + a + '" class="msgreport BC2">';
     1 == g ? h += '<a href="javascript:delReplyMsg(' + a + ')" class="msgdel AB1">\u522a\u9664</a>' : 3 == g && (h += '<a href="javascript:" onClick="delMsg_guild(3,' + a + '); return false;" class="msgdel AB1">\u522a\u9664</a>');
-    h += '<a href="http://home.gamer.com.tw/home.php?owner=' + b + '" target="_blank"><img src="' + getAvatarPic(b, l) + '" class="msghead" /></a><div><a href="http://home.gamer.com.tw/home.php?owner=' + b + 
+    h += '<a href="http://home.gamer.com.tw/home.php?owner=' + b + '" target="_blank"><img src="' + getAvatarPic(b, l) + '" class="msghead" /></a><div><a href="http://home.gamer.com.tw/home.php?owner=' + b +
     '" class="msgname AT1">' + c + "</a>\uff1a" + d + '<span><a href="javascript:void(0)" onclick="iWantReply(' + e + ",1,'" + b + "','" + c + '\')" title="\u56de\u8986\u4ed6"><img src="http://i2.bahamut.com.tw/spacer.gif" class="IMG-E26" /></a></span><span class="ST1">' + f + '</span><span class="ST1">#' + n + "</span></div>";
     return h + "</div>"
 }
@@ -149,7 +149,7 @@ function setBookMarkBtn(){
 		newItem.setAttribute('guildId',configArr['guildId']);
 		newItem.setAttribute('Msgid',configArr['MsgId']);
 		newItem.setAttribute('replyid',MsgReid);
-		
+
 		replyMsgHistoryArr[i].insertBefore(newItem, replyMsgHistoryArr[i].childNodes[0]);
 		replyMsgHistoryArr[i].addEventListener('mouseover',function(){
 			this.childNodes[0].style.display='block';
@@ -178,9 +178,9 @@ function setBookMarkBtn(){
 				configBookMarkArr.push(event.target.getAttribute('Msgid')+'-'+event.target.getAttribute('guildId'));
 				chrome.storage.local.set({bookMarkIndex:configBookMarkArr});
 				configArr['bookMarkIndex'] = configBookMarkArr;
-				
+
 			}
-			
+
 		});
 	}
 }
@@ -199,7 +199,7 @@ function setAutoRefresh(){
 			setIntervalNumber = window.setInterval(autoRefreshFunt,timeValue*1000);
 			document.getElementById('baha-autoRefreshBtn').setAttribute('cancelNumber',setIntervalNumber);
 			document.getElementById('baha-autoRefreshStr').innerHTML = '啟用自動更新中...';
-			
+
 			MSGRE_MAX = -1;
 			if(document.getElementById('baha-autoRefreshCheck').checked){
 				MSGRE_NOTIFYID = '';
@@ -214,47 +214,50 @@ function setAutoRefresh(){
 			}
 		}
 	}
-	
+
 }
 
 function autoRefreshFunt(){
 	var msgId = configArr['MsgId'];
 	var guildId = configArr['guildId'];
-	
+
 	$.ajax({
 		type: "GET",
 		url: "https://guild.gamer.com.tw/singleACMsg.php",
 		data: {sn: msgId , gsn: guildId},
 		success: function(b) {
-			
+
 			var replySnIdArr = new Array();
 			var replyArr = new Array();
+			var replyObjArr = new Array();
 			var replyArrTemp = b.match(/buildReply\([0-9]+\,\'[^\']+\'\,\'[^\']+\'\,\'[^\']+\'\,\'[^\']+\'\,[^\,]+\,[0-9]+\,[0-9]+\,\'[^\']*\'\)\;/g);
-			
+
 			var stopFlag = false;
 			var lastResponseUserId;
 			$.each(replyArrTemp, function(i, item) {
+				var replyObj = new Array();
 				var temp = item.match(/buildReply\(([0-9]+)\,\'([^\']+)\'\,\'([^\']+)\'\,\'([^\']+)\'\,\'([^\']+)\'\,([^\,]+)\,([0-9]+)\,([0-9]+)\,\'[^\']*\'\)\;/);
-				var snID = RegExp.$1;
-				var userID = RegExp.$2;
-				var user = RegExp.$3;
-				var content = RegExp.$4;
-				var time = RegExp.$5;
-				var isSelf = RegExp.$6;
-				var msgID = RegExp.$7;
-				var replyCount = RegExp.$8;
-				content = content.replace(/\&ensp/g,' ');
-				content = content.replace(/\&emsp/g,'　');
-				if(content.indexOf('[[STOP-AUTO-REFRESH]]') != -1){
+				replyObj.snID = RegExp.$1;
+				replyObj.userID = RegExp.$2;
+				replyObj.user = RegExp.$3;
+				replyObj.content = RegExp.$4;
+				replyObj.time = RegExp.$5;
+				replyObj.isSelf = RegExp.$6;
+				replyObj.msgID = RegExp.$7;
+				replyObj.replyCount = RegExp.$8;
+				replyObj.content = replyObj.content.replace(/\&ensp/g,' ');
+				replyObj.content = replyObj.content.replace(/\&emsp/g,'　');
+				if(replyObj.content.indexOf('[[STOP-AUTO-REFRESH]]') != -1){
 					stopFlag = true;
 				}
 
-				var singleReply = buildReplyFix(snID, userID, user, content, time, isSelf, msgID, replyCount, '');
-				replyArr.push(singleReply);
-				replySnIdArr.push(snID);
-				lastResponseUserId = userID;
+				replyObjArr.push(replyObj);
+				lastResponseUserId = replyObj.userID;
 			});
-			
+			configArr['lastReplyArr'] = replyObjArr;
+			reGenerateReply(true,replyArr,replySnIdArr);
+
+
 			if(configArr['singleACMsgReverse']){
 				replyArr.reverse();
 			}
@@ -269,23 +272,23 @@ function autoRefreshFunt(){
 			if(configArr['bookMarkBtn']){
 				setBookMarkBtn();
 			}
-			
+
 			if(configArr['bookmark-'+configArr['MsgId']] !== undefined){
 				 bookMarkChangeColor(configArr['bookmark-'+configArr['MsgId']]);
 			}
-			
+
 			if(stopFlag && !configArr['isOwner']){
 				document.getElementById('baha-autoRefreshInput').value = 0;
 				setAutoRefresh();
 				document.getElementById('baha-autoRefreshStr').innerHTML = '自動更新已被開串者要求關閉';
 			}
-			
+
 			if(document.getElementById('baha-autoRefreshCheck').checked){
 				var last_check = 0;
 				last_check = document.getElementById('allReply'+configArr['MsgId']).childElementCount;
-				
+
 				if(MSGRE_MAX < last_check && lastResponseUserId != configArr['controller']){
-					var text = (NEW_TITLE != ORGINAL_TITLE) 
+					var text = (NEW_TITLE != ORGINAL_TITLE)
 						? '分頁：' + NEW_TITLE
 						: document.getElementsByClassName('msgright')[0].textContent.substr(0,20);
 					var number = last_check
@@ -314,4 +317,227 @@ function bookMarkChangeColor(snid){
 function fastResponseFunt(snid,text){
 	document.getElementById('replyMsg'+ snid).value += text;
 	document.getElementById('replyMsg'+ snid).focus();
+}
+
+function addRightContent(){
+	var domRightTitle = document.createElement("h5");
+	domRightTitle.innerHTML = '部分顯示選項';
+	domRightTitle.id= 'baha-rightTitle';
+
+	var domRightContent = document.createElement("div");
+	domRightContent.className = 'BH-rbox MSG-list5';
+	domRightContent.id = 'baha-rightContent';
+
+	var rightContentHeader = document.createElement("p");
+	rightContentHeader.innerHTML = '目前狀態：正常';
+	rightContentHeader.id = 'baha-rightContentStatus';
+
+	var rightContentDiv = document.createElement("div");
+
+	var rightContentlabel1 = document.createElement("span");
+	rightContentlabel1.innerHTML = '只顯示書籤後的訊息：';
+
+	var rightContentChoose1 = document.createElement("select");
+	rightContentChoose1.id = 'baha-rightContentChoosebookMark';
+	var option01 = document.createElement("option");
+	option01.text = "關閉";
+	rightContentChoose1.add(option01);
+	var option02 = document.createElement("option");
+	option02.text = "開啟";
+	rightContentChoose1.add(option02);
+
+	var rightContentlabel2 = document.createElement("span");
+	rightContentlabel2.innerHTML = '顯示選項：';
+
+	var rightContentChoose2 = document.createElement("select");
+	rightContentChoose2.id = 'baha-rightContentChooseType';
+	var option1 = document.createElement("option");
+	option1.text = "全部顯示";
+	rightContentChoose2.add(option1);
+	var option2 = document.createElement("option");
+	option2.text = "顯示部分對象";
+	rightContentChoose2.add(option2);
+	rightContentChoose2.addEventListener("change", function(e){
+		if(document.getElementById('baha-rightContentChooseType').selectedIndex == 0){
+			var nameList = document.getElementsByName("baha-userList");
+			$.each(nameList, function(i, item) {
+				$(item).prop("checked", true);
+			});
+		}
+	});
+
+	var rightContentUserDiv = document.createElement("div");
+	rightContentUserDiv.id = 'baha-rightContentUserDiv';
+
+	var nowContentArr = generateReplyObjArr(document.documentElement.innerHTML);
+	configArr['lastReplyArr'] = nowContentArr;
+
+	var rightContentBtn = document.createElement("button");
+	rightContentBtn.innerHTML = '套用';
+
+	var rightContentBtnClean = document.createElement("button");
+	rightContentBtnClean.innerHTML = '全部清除';
+
+	var pageSetting = new Array();
+	pageSetting.onlyAfterBookMrak = 0;
+	pageSetting.showType = 0;
+	pageSetting.showUser = new Array();
+	configArr['displaySetting'] = pageSetting;
+
+	rightContentBtn.addEventListener("click", function(e){
+
+		var pageSetting = new Array();
+		pageSetting.onlyAfterBookMrak = document.getElementById('baha-rightContentChoosebookMark').selectedIndex;
+		pageSetting.showType = document.getElementById('baha-rightContentChooseType').selectedIndex;
+
+		if(pageSetting.onlyAfterBookMrak + pageSetting.showType !== 0){
+			document.getElementById('baha-rightContentStatus').innerHTML = '目前狀態：部分顯示中';
+		}else{
+			document.getElementById('baha-rightContentStatus').innerHTML = '目前狀態：正常';
+		}
+		pageSetting.showUser = new Array();
+		if(pageSetting.showType == 1){
+			var nameList = document.getElementsByName("baha-userList");
+			$.each(nameList, function(i, item) {
+				if($(item).prop("checked"))
+					pageSetting.showUser.push(item.value);
+			});
+		}
+
+		configArr['displaySetting'] = pageSetting;
+
+		reGenerateReply(false, new Array(),new Array());
+	});
+
+	rightContentBtnClean.addEventListener("click", function(e){
+		var nameList = document.getElementsByName("baha-userList");
+		$.each(nameList, function(i, item) {
+			$(item).prop("checked", false);
+		});
+	});
+
+	domRightContent.appendChild(rightContentHeader);
+	domRightContent.appendChild(rightContentlabel1);
+	domRightContent.appendChild(rightContentChoose1);
+	domRightContent.appendChild(document.createElement('br'));
+	domRightContent.appendChild(rightContentlabel2);
+	domRightContent.appendChild(rightContentChoose2);
+	domRightContent.appendChild(rightContentUserDiv);
+	domRightContent.appendChild(rightContentBtnClean);
+	domRightContent.appendChild(rightContentBtn);
+	$(document.getElementById('BH-slave')).prepend(domRightContent);
+	$(document.getElementById('BH-slave')).prepend(domRightTitle);
+	resetUserList(nowContentArr);
+}
+
+function generateReplyObjArr(html){
+	var replyArrTemp = html.match(/buildReply\([0-9]+\,\'[^\']+\'\,\'[^\']+\'\,\'[^\']+\'\,\'[^\']+\'\,[^\,]+\,[0-9]+\,[0-9]+\,\'[^\']*\'\)\;/g);
+	var replyArr = new Array();
+	var stopFlag = false;
+	var lastResponseUserId;
+	if(replyArr.length != 0)
+		$.each(replyArrTemp, function(i, item) {
+			var replyObj = new Array();
+			var temp = item.match(/buildReply\(([0-9]+)\,\'([^\']+)\'\,\'([^\']+)\'\,\'([^\']+)\'\,\'([^\']+)\'\,([^\,]+)\,([0-9]+)\,([0-9]+)\,\'[^\']*\'\)\;/);
+			replyObj.snID = RegExp.$1;
+			replyObj.userID = RegExp.$2;
+			replyObj.user = RegExp.$3;
+			replyObj.content = RegExp.$4;
+			replyObj.time = RegExp.$5;
+			replyObj.isSelf = RegExp.$6;
+			replyObj.msgID = RegExp.$7;
+			replyObj.replyCount = RegExp.$8;
+			replyObj.content = replyObj.content.replace(/\&ensp/g,' ');
+			replyObj.content = replyObj.content.replace(/\&emsp/g,'　');
+
+			replyArr.push(replyObj);
+		});
+
+	return replyArr;
+}
+
+function resetUserList(arr){
+	var userArr = new Array();
+	var userNameArr = new Array();
+	$.each(arr, function(i, item) {
+		if( userArr.indexOf(item.userID) == -1){
+			userArr.push(item.userID);
+			userNameArr.push(item.user);
+		}
+	});
+
+	var rightContentUserDiv = document.getElementById('baha-rightContentUserDiv');
+	rightContentUserDiv.innerHTML = '';
+	$.each(userArr, function(i, item) {
+		var userInput = document.createElement('input');
+		userInput.type = 'checkbox';
+		userInput.name = 'baha-userList';
+		userInput.value = item;
+		var userInputLabel = document.createElement('span');
+		userInputLabel.innerHTML = userNameArr[i];
+		userInputLabel.id = 'baha-userList-'+item;
+		userInputLabel.className = 'baha-userlist-Label';
+		$(userInput).prop("checked", true);
+
+		rightContentUserDiv.appendChild(userInput);
+		rightContentUserDiv.appendChild(userInputLabel);
+		rightContentUserDiv.appendChild(document.createElement('br'));
+	});
+}
+
+function reGenerateReply(flag,replyArr,replySnIdArr){
+	var domUserList =  document.getElementsByClassName('baha-userlist-Label');
+
+	var bookMarkLocation = -1;
+	if(configArr['bookmark-'+configArr['MsgId']] !== undefined && configArr['displaySetting'].onlyAfterBookMrak != 0){
+		for(var i = 0; i < configArr['lastReplyArr'].length ;i++ ){
+			if(('r-' + configArr['lastReplyArr'][i].snID) === configArr['bookmark-'+configArr['MsgId']]){
+				bookMarkLocation = i;
+				break;
+			}
+		}
+	}
+
+	$.each(domUserList,function(i, item) {
+		item.style.fontWeight = 'regular';
+		item.style.color = 'black';
+	});
+
+	$.each(configArr['lastReplyArr'], function(i, item) {
+		var printFlag = true;
+		if(i < bookMarkLocation)
+			printFlag = false;
+		if(printFlag && configArr['displaySetting'].showType == 1)
+			if(configArr['displaySetting'].showUser.indexOf(item.userID) == -1)
+				printFlag = false;
+		if(printFlag){
+			var singleReply = buildReplyFix(item.snID, item.userID, item.user, item.content, item.time, item.isSelf, item.msgID, item.replyCount, '');
+			replyArr.push(singleReply);
+			replySnIdArr.push(item.snID);
+			document.getElementById('baha-userList-'+item.userID).style.fontWeight = 'bold';
+			document.getElementById('baha-userList-'+item.userID).style.color = 'blue';
+		}
+	});
+
+	if(flag)
+		return;
+
+	if(configArr['singleACMsgReverse']){
+		replyArr.reverse();
+	}
+	var tempAllReplyHTML = '';
+	for(i = 0; i < replyArr.length; i++){
+		tempAllReplyHTML += replyArr[i];
+	}
+	document.getElementById('allReply'+configArr['MsgId']).innerHTML = tempAllReplyHTML;
+	for(i = 0; i < replySnIdArr.length; i++){
+		Util.ChangeText("r-" + replySnIdArr[i], Util.ChangeText.FLAG_BALA);
+	}
+	if(configArr['bookMarkBtn']){
+		setBookMarkBtn();
+	}
+
+	if(configArr['bookmark-'+configArr['MsgId']] !== undefined){
+		 bookMarkChangeColor(configArr['bookmark-'+configArr['MsgId']]);
+	}
 }
