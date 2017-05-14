@@ -14,6 +14,7 @@ function save_options() {
 	var sar = document.getElementById('singleACMsgReverse').checked;
 	var rwc = document.getElementById('replyDivWordCount').checked;
 	var bmb = document.getElementById('bookMarkBtn').checked;
+	var jsk = document.getElementById('uploadJsonKey').value;
 	var fs1 = document.getElementById('fastResponse1').value;
 	var fs2 = document.getElementById('fastResponse2').value;
 	var fs3 = document.getElementById('fastResponse3').value;
@@ -38,6 +39,7 @@ function save_options() {
 		singleACMsgReverse : sar,
 		replyDivWordCount : rwc,
 		bookMarkBtn : bmb,
+		uploadJsonKey : jsk,
 		fastResponse1 : fs1,
 		fastResponse2 : fs2,
 		fastResponse3 : fs3,
@@ -78,6 +80,7 @@ function restore_options() {
 			titleNumbersCheckRecommend:false,
 			singleACMsgReverse:false,
 			replyDivWordCount:false,
+			uploadJsonKey:null,
 			bookMarkBtn:false,
 			bookMarkIndex:new Array(),
 			fastResponse1:'',
@@ -104,6 +107,7 @@ function restore_options() {
 			changeCheckBoxState('titleNumbersCheckNotice',item['titleNumbersCheckNotice']);
 			changeCheckBoxState('titleNumbersCheckSubscript',item['titleNumbersCheckSubscript']);
 			changeCheckBoxState('titleNumbersCheckRecommend',item['titleNumbersCheckRecommend']);
+			changeInputState('uploadJsonKey',item['uploadJsonKey']);
 			changeInputState('fastResponse1',item['fastResponse1']);
 			changeInputState('fastResponse2',item['fastResponse2']);
 			changeInputState('fastResponse3',item['fastResponse3']);
@@ -121,7 +125,7 @@ function restore_options() {
 			changeInputState('fastResponse7name',item['fastResponse7name']);
 			changeInputState('fastResponse8name',item['fastResponse8name']);
 		}
-		
+
 	);
 }
 

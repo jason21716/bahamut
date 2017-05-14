@@ -138,51 +138,38 @@ function getAvatarPic(e, t) {
     return "#gid" == uidlow.substr(0, 4) ? "http://p2.bahamut.com.tw/S/GUILD/c/" + e.substr(4) % 10 + "/" + $.sprintf("%010d", e.substr(4)) + ".PNG" : "http://i2.bahamut.com.tw/none.gif"
 }
 
-function setBookMarkBtn(){
+function cleanBookMarkBtn(replyId){
+	var tempDom = document.getElementById('r-'+replyId);
+	tempDom.removeChild(tempDom.childNodes[0]);
+}
+
+function setAllBookMarkBtn(){
 	var replyMsgHistoryArr = document.getElementsByClassName('msgreport');
 	for (i = 0; i < replyMsgHistoryArr.length; i++) {
-		var newItem = document.createElement("div");
-		var MsgReid = replyMsgHistoryArr[i].id;
-		newItem.id = 'baha-bookMark-'+MsgReid;
-		newItem.className = 'baha-boonMarkBtn';
-		newItem.innerHTML = '設為書籤';
-		newItem.setAttribute('guildId',configArr['guildId']);
-		newItem.setAttribute('Msgid',configArr['MsgId']);
-		newItem.setAttribute('replyid',MsgReid);
-
-		replyMsgHistoryArr[i].insertBefore(newItem, replyMsgHistoryArr[i].childNodes[0]);
-		replyMsgHistoryArr[i].addEventListener('mouseover',function(){
-			this.childNodes[0].style.display='block';
-			this.style.width='570px';
-		});
-		replyMsgHistoryArr[i].addEventListener('mouseout',function(){
-			this.childNodes[0].style.display='none';
-			this.style.width='500px';
-		});
-		document.getElementById('baha-bookMark-'+MsgReid).addEventListener('click',function(event){
-			var chromeBookMarkNameStr = '{"bookmarkName-'+event.target.getAttribute('Msgid')+'":"'+document.getElementsByClassName('msgright')[0].textContent.substr(0,30)+'"}';
-			var chromeBookMarkStr = '{"bookmark-'+event.target.getAttribute('Msgid')+'":"'+event.target.getAttribute('replyid')+'"}';
-			var chromeBookMarkArr = JSON.parse(chromeBookMarkStr);
-			var chromeBookMarkNameArr = JSON.parse(chromeBookMarkNameStr);
-			chrome.storage.local.set(chromeBookMarkArr,function(){});
-			chrome.storage.local.set(chromeBookMarkNameArr,function(){
-				alert('書籤記錄完成!!');
-				document.getElementById(event.target.getAttribute('replyid')).style.backgroundColor='#D0B7C5';
-				configArr['bookmark-'+event.target.getAttribute('Msgid')] = event.target.getAttribute('replyid');
-			});
-			var configBookMarkArr = configArr['bookMarkIndex'];
-			if(isEmpty(configBookMarkArr)){
-				bookMarkIndexArr = new Array(event.target.getAttribute('Msgid')+'-'+event.target.getAttribute('guildId'));
-				chrome.storage.local.set({bookMarkIndex:bookMarkIndexArr});
-			}else if(configBookMarkArr.indexOf(event.target.getAttribute('Msgid')+'-'+event.target.getAttribute('guildId')) == -1){
-				configBookMarkArr.push(event.target.getAttribute('Msgid')+'-'+event.target.getAttribute('guildId'));
-				chrome.storage.local.set({bookMarkIndex:configBookMarkArr});
-				configArr['bookMarkIndex'] = configBookMarkArr;
-
-			}
-
-		});
+		setBookMarkBtn(replyMsgHistoryArr[i].id);
 	}
+}
+
+function setBookMarkBtn(MsgReid){
+	console.log(MsgReid);
+	var newItem = document.createElement("div");
+	newItem.id = 'baha-bookMark-'+MsgReid;
+	newItem.className = 'baha-boonMarkBtn';
+	newItem.innerHTML = '設為書籤';
+	newItem.setAttribute('guildId',configArr['guildId']);
+	newItem.setAttribute('Msgid',configArr['MsgId']);
+	newItem.setAttribute('replyid',MsgReid);
+
+	var tempCurrentDom = document.getElementById(MsgReid);
+	tempCurrentDom.insertBefore(newItem, tempCurrentDom.childNodes[0]);
+	tempCurrentDom.addEventListener('mouseover',function(){
+		this.childNodes[0].style.display='block';
+		this.style.width='570px';
+	});
+	tempCurrentDom.addEventListener('mouseout',function(){
+		this.childNodes[0].style.display='none';
+		this.style.width='500px';
+	});
 }
 
 function setAutoRefresh(){
@@ -237,14 +224,14 @@ function autoRefreshFunt(){
 			$.each(replyArrTemp, function(i, item) {
 				var replyObj = new Array();
 				var temp = item.match(/buildReply\(([0-9]+)\,\'([^\']+)\'\,\'([^\']+)\'\,\'([^\']+)\'\,\'([^\']+)\'\,([^\,]+)\,([0-9]+)\,([0-9]+)\,\'[^\']*\'\)\;/);
-				replyObj.snID = RegExp.$1;
-				replyObj.userID = RegExp.$2;
-				replyObj.user = RegExp.$3;
-				replyObj.content = RegExp.$4;
-				replyObj.time = RegExp.$5;
-				replyObj.isSelf = RegExp.$6;
-				replyObj.msgID = RegExp.$7;
-				replyObj.replyCount = RegExp.$8;
+				replyObj.snID = temp[1];
+				replyObj.userID = temp[2];
+				replyObj.user = temp[3];
+				replyObj.content = temp[4];
+				replyObj.time = temp[5];
+				replyObj.isSelf = temp[6];
+				replyObj.msgID = temp[7];
+				replyObj.replyCount = temp[8];
 				replyObj.content = replyObj.content.replace(/\&ensp/g,' ');
 				replyObj.content = replyObj.content.replace(/\&emsp/g,'　');
 				if(replyObj.content.indexOf('[[STOP-AUTO-REFRESH]]') != -1){
@@ -255,27 +242,7 @@ function autoRefreshFunt(){
 				lastResponseUserId = replyObj.userID;
 			});
 			configArr['lastReplyArr'] = replyObjArr;
-			reGenerateReply(true,replyArr,replySnIdArr);
-
-
-			if(configArr['singleACMsgReverse']){
-				replyArr.reverse();
-			}
-			var tempAllReplyHTML = '';
-			for(i = 0; i < replyArr.length; i++){
-				tempAllReplyHTML += replyArr[i];
-			}
-			document.getElementById('allReply'+configArr['MsgId']).innerHTML = tempAllReplyHTML;
-			for(i = 0; i < replySnIdArr.length; i++){
-				Util.ChangeText("r-" + replySnIdArr[i], Util.ChangeText.FLAG_BALA);
-			}
-			if(configArr['bookMarkBtn']){
-				setBookMarkBtn();
-			}
-
-			if(configArr['bookmark-'+configArr['MsgId']] !== undefined){
-				 bookMarkChangeColor(configArr['bookmark-'+configArr['MsgId']]);
-			}
+			reGenerateReply(false,replyArr,replySnIdArr);
 
 			if(stopFlag && !configArr['isOwner']){
 				document.getElementById('baha-autoRefreshInput').value = 0;
@@ -406,7 +373,7 @@ function addRightContent(){
 
 		configArr['displaySetting'] = pageSetting;
 
-		reGenerateReply(false, new Array(),new Array());
+		reGenerateReply(true, new Array(),new Array());
 	});
 
 	rightContentBtnClean.addEventListener("click", function(e){
@@ -435,21 +402,20 @@ function generateReplyObjArr(html){
 	var replyArr = new Array();
 	var stopFlag = false;
 	var lastResponseUserId;
-	if(replyArr.length != 0)
+	if(replyArrTemp.length != 0)
 		$.each(replyArrTemp, function(i, item) {
 			var replyObj = new Array();
 			var temp = item.match(/buildReply\(([0-9]+)\,\'([^\']+)\'\,\'([^\']+)\'\,\'([^\']+)\'\,\'([^\']+)\'\,([^\,]+)\,([0-9]+)\,([0-9]+)\,\'[^\']*\'\)\;/);
-			replyObj.snID = RegExp.$1;
-			replyObj.userID = RegExp.$2;
-			replyObj.user = RegExp.$3;
-			replyObj.content = RegExp.$4;
-			replyObj.time = RegExp.$5;
-			replyObj.isSelf = RegExp.$6;
-			replyObj.msgID = RegExp.$7;
-			replyObj.replyCount = RegExp.$8;
+			replyObj.snID = temp[1];
+			replyObj.userID = temp[2];
+			replyObj.user = temp[3];
+			replyObj.content = temp[4];
+			replyObj.time = temp[5];
+			replyObj.isSelf = temp[6];
+			replyObj.msgID = temp[7];
+			replyObj.replyCount = temp[8];
 			replyObj.content = replyObj.content.replace(/\&ensp/g,' ');
 			replyObj.content = replyObj.content.replace(/\&emsp/g,'　');
-
 			replyArr.push(replyObj);
 		});
 
@@ -486,6 +452,8 @@ function resetUserList(arr){
 }
 
 function reGenerateReply(flag,replyArr,replySnIdArr){
+	var hispeed = document.getElementById('baha-autoRefreshHiSpeedCheck').checked;
+
 	var domUserList =  document.getElementsByClassName('baha-userlist-Label');
 
 	var bookMarkLocation = -1;
@@ -497,6 +465,7 @@ function reGenerateReply(flag,replyArr,replySnIdArr){
 			}
 		}
 	}
+
 
 	$.each(domUserList,function(i, item) {
 		item.style.fontWeight = 'regular';
@@ -511,33 +480,151 @@ function reGenerateReply(flag,replyArr,replySnIdArr){
 			if(configArr['displaySetting'].showUser.indexOf(item.userID) == -1)
 				printFlag = false;
 		if(printFlag){
-			var singleReply = buildReplyFix(item.snID, item.userID, item.user, item.content, item.time, item.isSelf, item.msgID, item.replyCount, '');
-			replyArr.push(singleReply);
+			replyArr.push(item);
 			replySnIdArr.push(item.snID);
-			document.getElementById('baha-userList-'+item.userID).style.fontWeight = 'bold';
-			document.getElementById('baha-userList-'+item.userID).style.color = 'blue';
+			try {
+				document.getElementById('baha-userList-'+item.userID).style.fontWeight = 'bold';
+				document.getElementById('baha-userList-'+item.userID).style.color = 'blue';
+			} catch (e) {
+				resetUserList(configArr['lastReplyArr']);
+				document.getElementById('baha-userList-'+item.userID).style.fontWeight = 'bold';
+				document.getElementById('baha-userList-'+item.userID).style.color = 'blue';
+			}
+
 		}
 	});
 
-	if(flag)
-		return;
+	if(flag){
+		if(configArr['singleACMsgReverse']){
+			replyArr.reverse();
+		}
+		var tempAllReplyHTML = '';
+		for(i = 0; i < replyArr.length; i++){
+			var singleReply = buildReplyFix(replyArr[i].snID, replyArr[i].userID, replyArr[i].user, replyArr[i].content, (hispeed) ? changeTime(replyArr[i].time) : replyArr[i].time, replyArr[i].isSelf, replyArr[i].msgID, replyArr[i].replyCount, '');
+			tempAllReplyHTML += singleReply;
+		}
+		document.getElementById('allReply'+configArr['MsgId']).innerHTML = tempAllReplyHTML;
+		for(i = 0; i < replySnIdArr.length; i++){
+			Util.ChangeText("r-" + replySnIdArr[i], Util.ChangeText.FLAG_BALA);
+		}
+		if(configArr['bookMarkBtn']){
+			setAllBookMarkBtn();
+		}
+	}else{
+		var tempAllReply = document.getElementById('allReply'+configArr['MsgId']);
+		for(i = 0; i < replySnIdArr.length; i++){
+			if ($("#r-" + replySnIdArr[i]).length == 0) {
+				var singleReply = buildReplyFix(replyArr[i].snID, replyArr[i].userID, replyArr[i].user, replyArr[i].content, (hispeed) ? changeTime(replyArr[i].time) : replyArr[i].time, replyArr[i].isSelf, replyArr[i].msgID, replyArr[i].replyCount, '');
+				if(configArr['singleACMsgReverse']){
+					tempAllReply.insertBefore(htmlToElement(singleReply), tempAllReply.firstChild);
+				}else{
+					tempAllReply.appendChild(htmlToElement(singleReply));
+				}
+				if(configArr['bookMarkBtn']){
+					setBookMarkBtn("r-" + replySnIdArr[i]);
+				}
+				Util.ChangeText("r-" + replySnIdArr[i], Util.ChangeText.FLAG_BALA);
+			}
+		}
 
-	if(configArr['singleACMsgReverse']){
-		replyArr.reverse();
-	}
-	var tempAllReplyHTML = '';
-	for(i = 0; i < replyArr.length; i++){
-		tempAllReplyHTML += replyArr[i];
-	}
-	document.getElementById('allReply'+configArr['MsgId']).innerHTML = tempAllReplyHTML;
-	for(i = 0; i < replySnIdArr.length; i++){
-		Util.ChangeText("r-" + replySnIdArr[i], Util.ChangeText.FLAG_BALA);
-	}
-	if(configArr['bookMarkBtn']){
-		setBookMarkBtn();
+		var replyMsgHistoryArr = document.getElementsByClassName('msgreport');
+		for (i = 0; i < replyMsgHistoryArr.length; i++) {
+			var checkingReplyId = replyMsgHistoryArr[i].id.substr(2);
+			var replyIndex = replySnIdArr.indexOf(checkingReplyId)
+			if ( replyIndex == -1) {
+				document.getElementById('allReply'+configArr['MsgId']).removeChild(document.getElementById('r-'+checkingReplyId));
+			}else if(!hispeed){
+				var targetObj = replyArr[replyIndex];
+				var tempTime = targetObj.time;
+				var tempCount = targetObj.replyCount;
+				$('#r-'+checkingReplyId+' .ST1:eq(0)').html(tempTime);
+				$('#r-'+checkingReplyId+' .ST1:eq(1)').html('#'+tempCount);
+			}
+		}
 	}
 
 	if(configArr['bookmark-'+configArr['MsgId']] !== undefined){
 		 bookMarkChangeColor(configArr['bookmark-'+configArr['MsgId']]);
 	}
+}
+
+function uploadJsonFunt(){
+	var uploadObj = new Object();
+	var msgMatch = document.documentElement.innerHTML.match(/buildMsg\(([0-9]+),\'#GID([0-9]+)\',\'([^\']*)\',\'([^\']*)\',\'[^\']*owner=([^\"]*)[^\']*<img[^>]*> ([^<]*)<\/a>：([^']*)\',\'([^\']*)\',([0-9]+),([0-9]+),([0-9]+),\'([^\']*)\',([0-9]+),([0-9]+),([0-9]+),\'([^\']*)\',\'([^\']*)\'\)/);
+	uploadObj.sn = msgMatch[1];
+	uploadObj.gsn = msgMatch[2];
+  uploadObj.uid = msgMatch[5];
+  uploadObj.nick = msgMatch[6];
+	uploadObj.content = msgMatch[7];
+  uploadObj.gp = msgMatch[9];
+  uploadObj.bp = msgMatch[10];
+  uploadObj.priv = msgMatch[11];
+	uploadObj.date = changeTime(msgMatch[8]);
+  uploadObj.replynum = configArr['lastReplyArr'].length;
+	uploadObj.reply = new Array();
+
+	$.each(configArr['lastReplyArr'],function(i, item) {
+		var replyObj = new Object();
+		replyObj.sn = item.snID;
+	  replyObj.uid = item.userID;
+	  replyObj.nick = item.user;
+		replyObj.date = changeTime(item.time);
+		replyObj.comment = item.content;
+
+		uploadObj.reply.push(replyObj);
+	});
+
+	var myJsonString = JSON.stringify(uploadObj);
+	console.log(myJsonString);
+
+	$.ajax({
+		dataType: "json",
+	  url: "https://php-isaka.rhcloud.com/History/uploadJson.php",
+	  data: {
+			data: myJsonString,
+			key: configArr['uploadJsonKey']
+		},
+		method: "POST",
+	  success: function(e){
+			alert("上傳完成！"+" ("+e.code+") "+e.descirbe);
+		},
+		error: function(j,s,e){
+			alert("上傳失敗！"+e);
+		}
+	});
+}
+
+function changeTime(str){
+	var calender = new Date();
+	if(str.indexOf("昨天") !== -1){
+		calender.setDate(calender.getDate()-1);
+		str = str.replace("昨天",calender.format("yyyy-mm-dd"));
+	}
+	else if(str.indexOf("前天") !== -1){
+		calender.setDate(calender.getDate()-2);
+		str = str.replace("前天",calender.format("yyyy-mm-dd"));
+	}
+	else if(str.indexOf("分前") !== -1){
+		var matchs = str.match(/([0-9]+)分前/);
+		calender.setMinutes(calender.getMinutes()-matchs[1]);
+		str = calender.format("yyyy-mm-dd HH:MM");
+	}
+	else if(str.indexOf("1分內") !== -1){
+	  str = calender.format("yyyy-mm-dd HH:MM");
+	}
+	else if(str.indexOf("小時前") !== -1){
+		var matchs = str.match(/([0-9]+)小時前/);
+		calender.setHours(calender.getHours()-matchs[1]);
+		str = calender.format("yyyy-mm-dd HH:MM");
+	}
+	else{
+		var matchs = str.match(/([0-9]+)-([0-9]+) ([0-9]+):([0-9]+)/);
+
+		var newDate = new Date(calender.getYear(),matchs[1],matchs[2],matchs[3],matchs[4],0,0);
+    	if(newDate > calender )
+    		calender.setYear(calender.getYear()-1);
+			str = calender.format("yyyy-mm-dd HH:MM");
+	}
+	return str;
+
 }

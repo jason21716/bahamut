@@ -3,30 +3,30 @@
 
 	"name": "巴哈姆特公會擴充套件",
 	"description": "增進巴哈姆特公會對串體驗",
-	"version": "0.2.1.0",
-	"icons": 
-	{ 
+	"version": "0.3.0.0",
+	"icons":
+	{
 		"19": "baha19.png",
 		"38": "baha38.png",
         "48": "baha48.png",
-        "128": "baha128.png" 
+        "128": "baha128.png"
 	},
-	
+
 	"options_ui": {
 		"page": "options.html",
 		"chrome_style": true
 	},
-	
-	"background": 
-	{ 
-		"scripts": ["utility.js","background.js"] 
-	},
-	
-	"permissions": ["tabs","storage","activeTab","http://guild.gamer.com.tw/*","https://guild.gamer.com.tw/*","notifications"],
-	
-	"page_action": 
+
+	"background":
 	{
-		"default_icon": 
+		"scripts": ["utility.js","background.js"]
+	},
+
+	"permissions": ["tabs","storage","activeTab","http://guild.gamer.com.tw/*","https://guild.gamer.com.tw/*","https://php-isaka.rhcloud.com/*","notifications"],
+
+	"page_action":
+	{
+		"default_icon":
 		{
 			"19": "baha19.png",
 			"38": "baha38.png"
@@ -34,23 +34,23 @@
 		"default_title": "巴哈姆特公會擴充套件",
 		"default_popup": "popup.html"
 	},
-	
+
 	"content_scripts":
 	[
 		{
 		"matches":["http://guild.gamer.com.tw/*","https://guild.gamer.com.tw/*"],
 		"css":["contextmenu/jquery.contextMenu.css"],
 		"js":[
-			"jquery-2.0.0.min.js",
+			"jquery-2.0.0.min.js","date.format.js",
 			"contextmenu/jquery.ui.position.js","contextmenu/jquery.contextMenu.js",
 			"utility.js","singleACMsg.js","content_script.js"
 			]
-		}		
+		}
 	],
-	
-	"externally_connectable": 
+
+	"externally_connectable":
 	{
-		"ids": 
+		"ids":
 		[
 		  "*"
 		],
@@ -59,7 +59,7 @@
 		],
 		"accepts_tls_channel_id": false
 	},
-	
+
 	"commands": {
 		"fastResponce_1":{
 			"suggested_key": {
@@ -86,7 +86,7 @@
 			"description": "Send fast response 4."
 		}
 	},
-	
+
 	"web_accessible_resources": [
 		"contextmenu/font/*.*"
 	]

@@ -2,9 +2,9 @@
 
 chrome.storage.local.get(null,function(item){
 	configArr = item;
-	
-	
-	
+
+
+
 	//增加修改網頁標題功能
 	ORGINAL_TITLE = document.title;
 	NEW_TITLE = document.title;
@@ -14,7 +14,7 @@ chrome.storage.local.get(null,function(item){
 	BH_menuE_appendDOM.appendChild(BH_menuE_appendDOM_link);
 	document.getElementsByClassName('BH-menuE')[0].appendChild(BH_menuE_appendDOM);
 	BH_menuE_appendDOM_link.addEventListener("click", changePageTitle);
-	
+
 	//Message alert on title
 	if(item['titleNumbers'] === true){
 		title_msgChange(NEW_TITLE,configArr['titleNumbersCheckNotice']
@@ -27,11 +27,11 @@ chrome.storage.local.get(null,function(item){
 
 	//who are you?
 	var selfDOM = document.getElementsByClassName('TOP-my')[0].getElementsByTagName('li')[3].childNodes[0];
-	var selfDOMMatch = selfDOM.href.match(/https\:\/\/home\.gamer\.com\.tw\/([a-z A-Z 0-9]*)/); 
+	var selfDOMMatch = selfDOM.href.match(/https\:\/\/home\.gamer\.com\.tw\/([a-z A-Z 0-9]*)/);
 	configArr['controller'] = selfDOMMatch[1];
 	console.log(configArr['controller']);
 	//
-	
+
 	//網址解析
 	var urls = getDomainFromUrl(window.location.href);
 	var pageName = getPHPFileNameString(urls[1]);
@@ -46,15 +46,24 @@ chrome.storage.local.get(null,function(item){
 		var guildId = singleACMsgParme[1];
 		configArr['MsgId'] = MsgId;
 		configArr['guildId'] = guildId;
-		
+
+		//增加JSON上傳功能
+		if(configArr['uploadJsonKey'] !== null && configArr['uploadJsonKey']!== ""){
+			var BH_menuE_appendDOM_uploadJson_link = document.createElement("a");
+			BH_menuE_appendDOM_uploadJson_link.innerHTML = "上傳至暫存空間(活動組專用)";
+			var BH_menuE_appendDOM_uploadJson = document.createElement("li");
+			BH_menuE_appendDOM_uploadJson.appendChild(BH_menuE_appendDOM_uploadJson_link);
+			document.getElementsByClassName('BH-menuE')[0].appendChild(BH_menuE_appendDOM_uploadJson);
+			BH_menuE_appendDOM_uploadJson_link.addEventListener("click", uploadJsonFunt);
+		}
 		//新增右側部分檢視區塊
 		addRightContent();
-		
+
 		//倒轉replyAll與調整replyDiv位置
-		if(configArr['singleACMsgReverse'] === true){			
+		if(configArr['singleACMsgReverse'] === true){
 			var replyArr = copyReply(MsgId);
 			reverseReply(replyArr,MsgId);
-			
+
 			//改寫送出按鍵與replyMsg中keypress事件，解決疊樓異常問題
 			var replyBtnDOM = document.createElement("button");
 			replyBtnDOM.id = 'bahaext-replyBtn'+MsgId;
@@ -64,9 +73,9 @@ chrome.storage.local.get(null,function(item){
 			var funBtn = function(id,gid){ return function(){ checkReplyFix(id,'#GID'+gid);}; };
 			var funMsg = function(e,a,id,gid){ return function(){ enterkeyFix(e,a,'reply',id,'#GID'+gid);}; };
 			document.getElementById('bahaext-replyBtn'+MsgId).addEventListener("click", funBtn(MsgId,guildId));
-			document.getElementById('replyMsg'+MsgId).addEventListener("keypress", funMsg(event,this,MsgId,guildId));
+			document.getElementById('replyMsg'+MsgId).addEventListener("keypress", funMsg(event,document.getElementById('replyMsg'+MsgId),MsgId,guildId));
 		}
-		
+
 		//新增監聽Mmessage事件
 		chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			console.log('message received:' +request.message +' /' + request.text);
@@ -74,18 +83,18 @@ chrome.storage.local.get(null,function(item){
 				fastResponseFunt(MsgId,request.text);
 			}
 		});
-		
+
 		//修改右鍵選單
 		document.getElementById('replyDiv'+MsgId).className = 'context-menu-replyDiv';
 		$(function() {
 			$.contextMenu({
-				selector: '.context-menu-replyDiv', 
+				selector: '.context-menu-replyDiv',
 				callback: function(key, options) {
 					fastResponseFunt(MsgId,configArr[key]);
 				},
 				items: {
 					"clean":{
-						"name": "清空內容", 
+						"name": "清空內容",
 						"icon": function($element, key, item){ return 'context-menu-icon context-menu-icon-quit'; },
 						"callback":function(key, options) {
 							document.getElementById('replyMsg'+MsgId).value='';
@@ -93,7 +102,7 @@ chrome.storage.local.get(null,function(item){
 						}
 					},
 					"fastResponse": {
-						"name": "快速回覆...", 
+						"name": "快速回覆...",
 						"icon": "edit",
 						"items": {
 							"fastResponse1": {"name": configArr['fastResponse1name']},
@@ -107,9 +116,9 @@ chrome.storage.local.get(null,function(item){
 						}
 					}
 				}
-			});   
+			});
 		});
-		
+
 		//增加字數提示訊息，新增監聽事件
 		if(configArr['replyDivWordCount'] === true){
 			var wordCountDOM = document.createElement("span");
@@ -134,13 +143,13 @@ chrome.storage.local.get(null,function(item){
 					document.getElementById('bahaext-wordCount').innerHTML = '  剩餘'+leftWord+'字元';
 				}
 			});
-			
-			
+
+
 		}
-		
+
 		//新增書籤標記按鈕
 		if(configArr['bookMarkBtn'] === true){
-			setBookMarkBtn();
+			setAllBookMarkBtn();
 			var sheet = document.createElement('style');
 			sheet.innerHTML = ".baha-boonMarkBtn {float:right; border-width:1px; border-color:black;border-style: inset;background-color: #ffffff;padding: 3px; display:none; margin-left: 10px !important; width: 50px; height: 30px;text-align: center; line-height: 30px !important;} .baha-boonMarkBtn:hover {color:red;}";
 			document.body.appendChild(sheet);
@@ -157,7 +166,7 @@ chrome.storage.local.get(null,function(item){
 		}else{
 			document.getElementsByClassName('msgright')[0].appendChild(autoRefreshDivDom);
 		}
-		
+
 			//確認是否為該串擁有者
 		var msgrightDOM = document.getElementsByClassName('msgright')[0];
 		var msgControllerDOM = msgrightDOM.getElementsByTagName('a')[0];
@@ -167,14 +176,14 @@ chrome.storage.local.get(null,function(item){
 			configArr['isOwner'] = isOwner;
 		}
 		else{
-			var msgControllerDOMMatch = msgControllerDOM.href.match(/https\:\/\/home\.gamer\.com\.tw\/home\.php\?owner\=([a-z A-Z 0-9]*)/); 
+			var msgControllerDOMMatch = msgControllerDOM.href.match(/https\:\/\/home\.gamer\.com\.tw\/home\.php\?owner\=([a-z A-Z 0-9]*)/);
 			var msgController = msgControllerDOMMatch[1];
 			console.log(msgController);
 			console.log(msgController);
 			isOwner = false;
 		}
 		configArr['isOwner'] = isOwner;
-		
+
 		var mainText = msgrightDOM.textContent;
 		if(mainText.indexOf('[[STOP-AUTO-REFRESH]]') == -1 || configArr['isOwner']){
 			var autoRefreshStrDom = document.createElement('p');
@@ -203,6 +212,17 @@ chrome.storage.local.get(null,function(item){
 			var autoRefreshStr3Dom = document.createElement('p');
 			autoRefreshStr3Dom.innerHTML = '啟動桌面通知功能';
 			autoRefreshStr3Dom.style.display = 'inline';
+			var autoRefreshInput3Dom = document.createElement('input');
+			autoRefreshInput3Dom.id = 'baha-autoRefreshHiSpeedCheck';
+			autoRefreshInput3Dom.type = 'checkbox';
+			var autoRefreshStr4Dom = document.createElement('p');
+			autoRefreshStr4Dom.innerHTML = '啟動長串更新機制';
+			autoRefreshStr4Dom.style.display = 'inline';
+			var autoRefreshBtn2Dom = document.createElement('button');
+			autoRefreshBtn2Dom.innerHTML = '整串手動重整';
+			autoRefreshBtn2Dom.id = 'baha-manuelRefreshBtn';
+			autoRefreshBtn2Dom.setAttribute('Msgid',MsgId);
+			autoRefreshBtn2Dom.style.width='100px';
 			document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshStrDom);
 			document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshInputDom);
 			document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshBtnDom);
@@ -210,11 +230,40 @@ chrome.storage.local.get(null,function(item){
 			document.getElementById('baha-autoRefreshDiv').appendChild(document.createElement('br'));
 			document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshInput2Dom);
 			document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshStr3Dom);
+			document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshInput3Dom);
+			document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshStr4Dom);
+			document.getElementById('baha-autoRefreshDiv').appendChild(autoRefreshBtn2Dom);
 			document.getElementById('baha-autoRefreshBtn').addEventListener('click',setAutoRefresh);
+			document.getElementById('baha-manuelRefreshBtn').addEventListener('click',function(){
+				reGenerateReply(true,new Array(),new Array());
+			});
 		}
-		
-		
-		
+
+		$('#allReply'+MsgId).on('click','.baha-boonMarkBtn',function(event){
+			console.log('bookmark clicked.')
+			var chromeBookMarkNameStr = '{"bookmarkName-'+event.target.getAttribute('Msgid')+'":"'+document.getElementsByClassName('msgright')[0].textContent.substr(0,30)+'"}';
+			var chromeBookMarkStr = '{"bookmark-'+event.target.getAttribute('Msgid')+'":"'+event.target.getAttribute('replyid')+'"}';
+			var chromeBookMarkArr = JSON.parse(chromeBookMarkStr);
+			var chromeBookMarkNameArr = JSON.parse(chromeBookMarkNameStr);
+			chrome.storage.local.set(chromeBookMarkArr,function(){});
+			chrome.storage.local.set(chromeBookMarkNameArr,function(){
+				alert('書籤記錄完成!!');
+				document.getElementById(event.target.getAttribute('replyid')).style.backgroundColor='#D0B7C5';
+				configArr['bookmark-'+event.target.getAttribute('Msgid')] = event.target.getAttribute('replyid');
+			});
+			var configBookMarkArr = configArr['bookMarkIndex'];
+			if(isEmpty(configBookMarkArr)){
+				bookMarkIndexArr = new Array(event.target.getAttribute('Msgid')+'-'+event.target.getAttribute('guildId'));
+				chrome.storage.local.set({bookMarkIndex:bookMarkIndexArr});
+			}else if(configBookMarkArr.indexOf(event.target.getAttribute('Msgid')+'-'+event.target.getAttribute('guildId')) == -1){
+				configBookMarkArr.push(event.target.getAttribute('Msgid')+'-'+event.target.getAttribute('guildId'));
+				chrome.storage.local.set({bookMarkIndex:configBookMarkArr});
+				configArr['bookMarkIndex'] = configBookMarkArr;
+
+			}
+
+		});
+
 	}
 	else if(pageName[0] == "guild"){
 		//增加字數提示訊息，新增監聽事件
@@ -239,9 +288,8 @@ chrome.storage.local.get(null,function(item){
 					document.getElementById('bahaext-msgWordCount').innerHTML = '  剩餘'+leftWord+'字元';
 				}
 			});
-		
+
 		}
 	}
 
 });
-
