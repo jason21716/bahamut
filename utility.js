@@ -181,3 +181,50 @@ function htmlToElement(html) {
     template.innerHTML = html;
     return template.content.firstChild;
 }
+
+function cuttingMsg(str,length){
+	  var targetLength = length*3;
+		var strArr = str.match(/[^\r\n]{0,}[\r\n]{0,}/gm);
+
+
+		console.log(strArr);
+
+		var resultArr = [];
+		var tempCount = 0;
+		var tempStr = "";
+		while(strArr.length > 0){
+			var tempPatten = strArr.shift();
+			var leng = countLimitFixOnlyNum(tempPatten);
+			console.log(leng);
+			if(tempCount + leng <= targetLength){
+				tempStr += tempPatten;
+				tempCount += leng;
+			}
+			else if(leng <= targetLength){
+				resultArr.push(tempStr);
+				tempStr = tempPatten;
+				tempCount = leng;
+			}else{
+				if(tempStr.length > 0){
+					resultArr.push(tempStr);
+					tempStr = "";
+					tempCount = 0;
+				}
+				var strSpiltArr = tempPatten.match(/[^，、。\s]{0,}[，、。\s]{0,1}/gm);
+				for(var i = strSpiltArr.length - 1 ; i >= 0 ; i--){
+					if(countLimitFixOnlyNum(strSpiltArr[i]) <= targetLength)
+						strArr.unshift(strSpiltArr[i]);
+					else{
+						strArr.unshift(strSpiltArr[i].substr(strSpiltArr[i].length/2+1));
+						strArr.unshift(strSpiltArr[i].substr(0,strSpiltArr[i].length/2));
+					}
+				}
+			}
+			console.log(strArr);
+		}
+		resultArr.push(tempStr);
+		resultArr.forEach(function(element, index, array){
+			resultArr[index] = element.replace(/[\r\n]{1,}$/g,'');
+		});
+		return resultArr;
+}

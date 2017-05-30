@@ -13,6 +13,7 @@ function save_options() {
 	var tncr = document.getElementById('titleNumbersCheckRecommend').checked;
 	var sar = document.getElementById('singleACMsgReverse').checked;
 	var rwc = document.getElementById('replyDivWordCount').checked;
+	var rc = document.getElementById('replyDivCutting').checked;
 	var bmb = document.getElementById('bookMarkBtn').checked;
 	var jsk = document.getElementById('uploadJsonKey').value;
 	var fs1 = document.getElementById('fastResponse1').value;
@@ -38,6 +39,7 @@ function save_options() {
 		titleNumbersCheckRecommend : tncr,
 		singleACMsgReverse : sar,
 		replyDivWordCount : rwc,
+		replyDivCutting : rc,
 		bookMarkBtn : bmb,
 		uploadJsonKey : jsk,
 		fastResponse1 : fs1,
@@ -80,6 +82,7 @@ function restore_options() {
 			titleNumbersCheckRecommend:false,
 			singleACMsgReverse:false,
 			replyDivWordCount:false,
+			replyDivCutting : false,
 			uploadJsonKey:null,
 			bookMarkBtn:false,
 			bookMarkIndex:new Array(),
@@ -103,6 +106,7 @@ function restore_options() {
 			changeCheckBoxState('titleNumbers',item['titleNumbers']);
 			changeCheckBoxState('singleACMsgReverse',item['singleACMsgReverse'] );
 			changeCheckBoxState('replyDivWordCount',item['replyDivWordCount']);
+			changeCheckBoxState('replyDivCutting',item['replyDivCutting']);
 			changeCheckBoxState('bookMarkBtn',item['bookMarkBtn']);
 			changeCheckBoxState('titleNumbersCheckNotice',item['titleNumbersCheckNotice']);
 			changeCheckBoxState('titleNumbersCheckSubscript',item['titleNumbersCheckSubscript']);

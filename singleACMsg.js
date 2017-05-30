@@ -58,6 +58,18 @@ function countLimitFix2(a, b) {
     return utf8LengthFix(c) > 3 * b ? true : false;
 }
 
+function countLimitFixOnlyNum(a) {
+    var c = a
+      , c = c.replace(/&/g, "&amp;")
+      , c = c.replace(/'/g, "&#039;")
+      , c = c.replace(/"/g, "&quot;")
+      , c = c.replace(/</g, "&lt;")
+      , c = c.replace(/>/g, "&gt;")
+      , c = c.replace(/\r/g, "")
+      , c = c.replace(/\n/g, "<br />");
+    return utf8LengthFix(c);
+}
+
 function utf8LengthFix(letter) {
     var b = letter.match(/[^\x00-\xff]/ig);
     return null  === b ? letter.length : letter.length + 2 * b.length;
@@ -72,19 +84,69 @@ function enterkeyFix(a, b, c, d, f) {
     a.preventDefault ? a.preventDefault() : a.returnValue = !1)
 }
 
+function enterkeyLongTextFix(a, b, c, d, f) {
+    a = window.event || a;
+    var g = (navigator.appName == "Microsoft Internet Explorer") ? a.keyCode : a.which
+      , e = "main" == c ? 600 : 85;
+    (13 == g )
+			? ( ( a.shiftKey )
+				? (countLimitFix2(b, e),
+    			b.clientHeight < b.scrollHeight && (b.style.height = b.scrollHeight + "px")
+				)
+				: ("main" == c ? checkMsg() : checkReplyLongTextFix(d, f),
+	    		a.preventDefault ? a.preventDefault() : a.returnValue = !1) )
+			: (countLimitFix2(b, e),
+				b.clientHeight < b.scrollHeight && (b.style.height = b.scrollHeight + "px")
+			);
+}
+
 function checkReplyFix(a, b) {
     var c = document.getElementById("replyMsg" + a)
       , d = c.value;
+		var letterCount = countLimitFix2(c, 85);
+		if(letterCount)
+			alert("\u5b57\u6578\u8d85\u904e85\u500b\u5b57\u4e86\u5594\uff5e");
     countLimitFix2(c, 85) || ("" == d.replace(/(^\s*)|(\s*$)/g, "") ? (alert("\u8acb\u8f38\u5165\u7559\u8a00"),
     c.focus()) : document.getElementById("bahaext-replyBtn" + a).disabled ? alert("\u8655\u7406\u4e2d\uff0c\u8acb\u7a0d\u5019") : (document.getElementById("bahaext-replyBtn" + a).disabled = !0,
     $.ajax({
 		type: "POST",
 		url: "/ajax/comment.php",
 		data: {a: 'A', s: a , c: c.value , u:b},
-		success: function(b) {
-            showActiveDivFix("allReply" + a, b);
+		success: function(bb) {
+            showActiveDivFix("allReply" + a, bb);
         }
 	})))
+}
+
+function checkReplyLongTextFix(a, b) {
+    var c = document.getElementById("replyMsg" + a)
+      , d = c.value;
+		var letterCount = countLimitFix2(c, 85);
+		var postArr = [];
+		if(letterCount)
+			postArr = cuttingMsg(c.value,85);
+		else
+			postArr.push(d);
+
+		console.log(postArr);
+    ("" == d.replace(/(^\s*)|(\s*$)/g, "") ? (alert("\u8acb\u8f38\u5165\u7559\u8a00"),
+    c.focus()) : document.getElementById("bahaext-replyBtn" + a).disabled ? alert("\u8655\u7406\u4e2d\uff0c\u8acb\u7a0d\u5019") : (document.getElementById("bahaext-replyBtn" + a).disabled = !0,
+			uploadRecursion(postArr,0,a,b)
+		))
+}
+
+function uploadRecursion(arr,index,a,b){
+	if(arr.length == index)
+		return;
+	$.ajax({
+		type: "POST",
+		url: "/ajax/comment.php",
+		data: {a: 'A', s: a , c: arr[index] , u:b},
+		success: function(t) {
+			showActiveDivFix("allReply" + a, t);
+			uploadRecursion(arr,index+1,a,b);
+			}
+	});
 }
 
 function showActiveDivFix(a, b) {
@@ -95,12 +157,18 @@ function showActiveDivFix(a, b) {
 		  , e = b.getElementsByTagName("date")[0].textContent
 		  , n = b.getElementsByTagName("content")[0].textContent
 		  , l = "undefined" !== typeof avatarUpdate ? avatarUpdate : "";
-	if ("allReply" == a.substr(0, 8))
-		c = "" == document.getElementById(a).innerHTML ? c = 1 : parseInt(document.getElementById(a).firstChild.lastChild.lastChild.innerHTML.substr(1)) + 1,
-		document.getElementById(a).innerHTML = buildReplyFix(d, f, g, n, e, 1, a.substr(8), c, l) + document.getElementById(a).innerHTML,
-		document.getElementById("replyMsg" + a.substr(8)).value = "",
-		Util.ChangeText("r-" + d, Util.ChangeText.FLAG_BALA),
+	if ("allReply" == a.substr(0, 8)){
+		c = "" == document.getElementById(a).innerHTML ? c = 1 : parseInt(document.getElementById(a).firstChild.lastChild.lastChild.innerHTML.substr(1)) + 1;
+		if(configArr['singleACMsgReverse'] === true)
+			document.getElementById(a).innerHTML = buildReplyFix(d, f, g, n, e, 1, a.substr(8), c, l) + document.getElementById(a).innerHTML;
+		else {
+			document.getElementById(a).innerHTML = document.getElementById(a).innerHTML + buildReplyFix(d, f, g, n, e, 1, a.substr(8), c, l);
+		}
+		document.getElementById("replyMsg" + a.substr(8)).value = "";
+		Util.ChangeText("r-" + d, Util.ChangeText.FLAG_BALA);
 		document.getElementById("bahaext-replyBtn" + a.substr(8)).disabled = !1;
+	}
+
 }
 
 function buildReplyFix(a, b, c, d, f, g, e, n, l) {
@@ -402,23 +470,28 @@ function generateReplyObjArr(html){
 	var replyArr = new Array();
 	var stopFlag = false;
 	var lastResponseUserId;
-	if(replyArrTemp.length != 0)
-		$.each(replyArrTemp, function(i, item) {
-			var replyObj = new Array();
-			var temp = item.match(/buildReply\(([0-9]+)\,\'([^\']+)\'\,\'([^\']+)\'\,\'([^\']+)\'\,\'([^\']+)\'\,([^\,]+)\,([0-9]+)\,([0-9]+)\,\'[^\']*\'\)\;/);
-			replyObj.snID = temp[1];
-			replyObj.userID = temp[2];
-			replyObj.user = temp[3];
-			replyObj.content = temp[4];
-			replyObj.time = temp[5];
-			replyObj.isSelf = temp[6];
-			replyObj.msgID = temp[7];
-			replyObj.replyCount = temp[8];
-			replyObj.content = replyObj.content.replace(/\&ensp/g,' ');
-			replyObj.content = replyObj.content.replace(/\&emsp/g,'　');
-			replyArr.push(replyObj);
-		});
+	try {
+		if(replyArrTemp.length != 0)
+			$.each(replyArrTemp, function(i, item) {
+				var replyObj = new Array();
+				var temp = item.match(/buildReply\(([0-9]+)\,\'([^\']+)\'\,\'([^\']+)\'\,\'([^\']+)\'\,\'([^\']+)\'\,([^\,]+)\,([0-9]+)\,([0-9]+)\,\'[^\']*\'\)\;/);
+				replyObj.snID = temp[1];
+				replyObj.userID = temp[2];
+				replyObj.user = temp[3];
+				replyObj.content = temp[4];
+				replyObj.time = temp[5];
+				replyObj.isSelf = temp[6];
+				replyObj.msgID = temp[7];
+				replyObj.replyCount = temp[8];
+				replyObj.content = replyObj.content.replace(/\&ensp/g,' ');
+				replyObj.content = replyObj.content.replace(/\&emsp/g,'　');
+				replyArr.push(replyObj);
+			});
+	} catch (e) {
 
+	} finally {
+
+	}
 	return replyArr;
 }
 

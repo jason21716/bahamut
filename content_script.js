@@ -1,19 +1,23 @@
 ﻿var configArr;
+ORGINAL_TITLE = document.title;
+NEW_TITLE = document.title;
 
-chrome.storage.local.get(null,function(item){
-	configArr = item;
-
-
-
+function addBtnEditTitle(){
 	//增加修改網頁標題功能
-	ORGINAL_TITLE = document.title;
-	NEW_TITLE = document.title;
 	var BH_menuE_appendDOM_link = document.createElement("a");
 	BH_menuE_appendDOM_link.innerHTML = "更改網頁標題";
 	var BH_menuE_appendDOM = document.createElement("li");
 	BH_menuE_appendDOM.appendChild(BH_menuE_appendDOM_link);
 	document.getElementsByClassName('BH-menuE')[0].appendChild(BH_menuE_appendDOM);
 	BH_menuE_appendDOM_link.addEventListener("click", changePageTitle);
+}
+
+chrome.storage.local.get(null,function(item){
+	configArr = item;
+
+
+
+
 
 	//Message alert on title
 	if(item['titleNumbers'] === true){
@@ -40,6 +44,8 @@ chrome.storage.local.get(null,function(item){
 
 	//singleACMsg頁面行為
 	if(pageName[0] == "singleACMsg"){
+		addBtnEditTitle();
+
 		//抓取MsgId、guildId
 		var singleACMsgParme = getSingleACMsgParmeString(pageName[1]);
 		var MsgId = singleACMsgParme[0];
@@ -59,6 +65,7 @@ chrome.storage.local.get(null,function(item){
 		//新增右側部分檢視區塊
 		addRightContent();
 
+
 		//倒轉replyAll與調整replyDiv位置
 		if(configArr['singleACMsgReverse'] === true){
 			var replyArr = copyReply(MsgId);
@@ -70,8 +77,22 @@ chrome.storage.local.get(null,function(item){
 			replyBtnDOM.innerHTML = '叭啦';
 			document.getElementById('replyDiv'+MsgId).removeChild(document.getElementById('replyBtn'+MsgId));
 			document.getElementById('replyDiv'+MsgId).appendChild(replyBtnDOM);
-			var funBtn = function(id,gid){ return function(){ checkReplyFix(id,'#GID'+gid);}; };
-			var funMsg = function(e,a,id,gid){ return function(){ enterkeyFix(e,a,'reply',id,'#GID'+gid);}; };
+
+			if(configArr['replyDivCutting']===true){
+				var funBtn = function(id,gid){ return function(){ checkReplyLongTextFix(id,'#GID'+gid);}; };
+				var funMsg = function(e,a,id,gid){ return function(){ enterkeyLongTextFix(e,a,'reply',id,'#GID'+gid);}; };
+			}else{
+				var funBtn = function(id,gid){ return function(){ checkReplyFix(id,'#GID'+gid);}; };
+				var funMsg = function(e,a,id,gid){ return function(){ enterkeyFix(e,a,'reply',id,'#GID'+gid);}; };
+			}
+
+			//重建replyMsg，清除先前的onkeypress事件
+			document.getElementById('replyDiv'+MsgId).removeChild(document.getElementById('replyMsg'+MsgId));
+			var BH_replyDiv_DOM = document.createElement("textarea");
+			BH_replyDiv_DOM.id = 'replyMsg'+MsgId;
+			BH_replyDiv_DOM.setAttribute("rows", "1");
+			document.getElementById('replyDiv'+MsgId).insertBefore(BH_replyDiv_DOM,document.getElementById('emo'+MsgId));
+
 			document.getElementById('bahaext-replyBtn'+MsgId).addEventListener("click", funBtn(MsgId,guildId));
 			document.getElementById('replyMsg'+MsgId).addEventListener("keypress", funMsg(event,document.getElementById('replyMsg'+MsgId),MsgId,guildId));
 		}
@@ -120,7 +141,7 @@ chrome.storage.local.get(null,function(item){
 		});
 
 		//增加字數提示訊息，新增監聽事件
-		if(configArr['replyDivWordCount'] === true){
+		if(configArr['replyDivWordCount'] === true ){
 			var wordCountDOM = document.createElement("span");
 			wordCountDOM.id = 'bahaext-wordCount';
 			wordCountDOM.style.color = 'red';
@@ -131,10 +152,17 @@ chrome.storage.local.get(null,function(item){
 			document.getElementById('replyMsg'+MsgId).addEventListener("input", function(){
 				var msgBox = document.getElementById('replyMsg'+MsgId);
 				if(countLimitFix(msgBox,85) < 0){
-					msgBox.style.borderColor = 'red';
-					msgBox.style.borderWidths = '2pt';
-					msgBox.style.backgroundColor = '#D2B7B7';
-					document.getElementById('bahaext-wordCount').innerHTML = '  已超過字數限制';
+					if(configArr['replyDivCutting']===false){
+						msgBox.style.borderColor = 'red';
+						msgBox.style.borderWidths = '2pt';
+						msgBox.style.backgroundColor = '#D2B7B7';
+						document.getElementById('bahaext-wordCount').innerHTML = '  已超過字數限制';
+					}else{
+						msgBox.style.borderColor = 'red';
+						msgBox.style.borderWidths = '2pt';
+						document.getElementById('bahaext-wordCount').innerHTML = '  已超過一串之字數，將會切串後發送';
+					}
+
 				}else{
 					msgBox.style.borderColor = '';
 					msgBox.style.borderWidths = '';
@@ -266,6 +294,8 @@ chrome.storage.local.get(null,function(item){
 
 	}
 	else if(pageName[0] == "guild"){
+		addBtnEditTitle();
+
 		//增加字數提示訊息，新增監聽事件
 		if(configArr['replyDivWordCount'] === true){
 			var msgWordCountDOM = document.createElement("span");
