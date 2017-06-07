@@ -18,6 +18,11 @@ function receiveMessage(request, sender, sendResponse) {
 			},
 			function(notificationId) {}
 		);
+		if(request.sound){
+			var yourSound = new Audio('sounds/iphonenoti.mp3');
+			yourSound.play();
+		}
+		
 	}
 }
 

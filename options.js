@@ -15,6 +15,7 @@ function save_options() {
 	var rwc = document.getElementById('replyDivWordCount').checked;
 	var rc = document.getElementById('replyDivCutting').checked;
 	var bmb = document.getElementById('bookMarkBtn').checked;
+	var ns = document.getElementById('notifiSound').checked;
 	var jsk = document.getElementById('uploadJsonKey').value;
 	var fs1 = document.getElementById('fastResponse1').value;
 	var fs2 = document.getElementById('fastResponse2').value;
@@ -41,6 +42,7 @@ function save_options() {
 		replyDivWordCount : rwc,
 		replyDivCutting : rc,
 		bookMarkBtn : bmb,
+		notifiSound : ns,
 		uploadJsonKey : jsk,
 		fastResponse1 : fs1,
 		fastResponse2 : fs2,
@@ -85,6 +87,7 @@ function restore_options() {
 			replyDivCutting : false,
 			uploadJsonKey:null,
 			bookMarkBtn:false,
+			notifiSound : false,
 			bookMarkIndex:new Array(),
 			fastResponse1:'',
 			fastResponse2:'',
@@ -108,6 +111,7 @@ function restore_options() {
 			changeCheckBoxState('replyDivWordCount',item['replyDivWordCount']);
 			changeCheckBoxState('replyDivCutting',item['replyDivCutting']);
 			changeCheckBoxState('bookMarkBtn',item['bookMarkBtn']);
+			changeCheckBoxState('notifiSound',item['notifiSound']);
 			changeCheckBoxState('titleNumbersCheckNotice',item['titleNumbersCheckNotice']);
 			changeCheckBoxState('titleNumbersCheckSubscript',item['titleNumbersCheckSubscript']);
 			changeCheckBoxState('titleNumbersCheckRecommend',item['titleNumbersCheckRecommend']);
