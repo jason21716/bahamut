@@ -753,7 +753,7 @@ function uploadJsonFunt() {
 
     $.ajax({
         dataType: "json",
-        url: "https://php-isaka.rhcloud.com/History/uploadJson.php",
+        url: "https://www.isaka.idv.tw/History/uploadJson.php",
         data: {
             data: myJsonString,
             key: configArr['uploadJsonKey']
