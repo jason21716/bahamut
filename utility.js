@@ -252,7 +252,7 @@ function filterRollDice(match, var_count, var_size, var_symbol, var_addnum, var_
     }
     $.ajax({
         type: "POST",
-        url: "http://www.isaka.idv.tw/dice-api/dice",
+        url: "https://www.isaka.idv.tw/dice-api/dice",
         dataType: 'json',
         data: dice,
         success: function(bb) {

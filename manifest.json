@@ -3,7 +3,7 @@
 
     "name": "巴哈姆特公會擴充套件",
     "description": "增進巴哈姆特公會對串體驗",
-    "version": "0.4.1.1",
+    "version": "0.4.1.2",
     "icons": {
         "19": "baha19.png",
         "38": "baha38.png",
@@ -20,7 +20,7 @@
         "scripts": ["utility.js", "background.js"]
     },
 
-    "permissions": ["tabs", "storage", "activeTab", "http://guild.gamer.com.tw/*", "https://guild.gamer.com.tw/*", "https://php-isaka.rhcloud.com/*", "notifications"],
+    "permissions": ["tabs", "storage", "activeTab", "http://guild.gamer.com.tw/*", "https://guild.gamer.com.tw/*", "https://www.isaka.idv.tw/*", "http://www.isaka.idv.tw/*", "notifications"],
 
     "page_action": {
         "default_icon": {
